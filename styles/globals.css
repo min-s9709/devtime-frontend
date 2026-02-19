@@ -1,0 +1,103 @@
+@import "tailwindcss";
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+
+@theme {
+  --font-sans:
+    "Pretendard Variable", "Pretendard", -apple-system, sans-serif,
+    BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI",
+    "Apple SD Gothic Neo", "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+
+  /* ===== Primary ===== */
+  --color-primary: #4c79ff;
+  --color-primary-10: rgba(78, 121, 255, 0.1); /* 10% opacity */
+  --color-primary-30: rgba(78, 121, 255, 0.3); /* 30% opacity */
+  --color-primary-light: #78b0ff;
+  --color-primary-light-10: rgba(120, 176, 255, 0.1); /* 10% opacity */
+  --color-primary-light-30: rgba(120, 176, 255, 0.3); /* 30% opacity */
+  --color-primary-gradient-start: #4c79ff;
+  --color-primary-gradient-end: #023e99;
+
+  /* ===== Secondary ===== */
+  --color-indigo: #023e99;
+  --color-indigo-light: #a3c3ff;
+  --color-informative: #2563eb;
+  --color-informative-light: #53b2ff;
+  --color-negative: #dc2626;
+  --color-negative-light: #ff6363;
+  --color-notice: #fbbf24;
+  --color-notice-light: #ffdb7f;
+  --color-positive: #22c55e;
+  --color-positive-light: #62ec95;
+  --color-fuchsia: #fd28ec;
+  --color-fuchsia-light: #ff87f5;
+
+  /* ===== Gray ===== */
+  --color-white: #ffffff;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f0f2f5;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #ccd0d6;
+  --color-gray-400: #969da8;
+  --color-gray-500: #717887;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #394252;
+  --color-gray-800: #1f2937;
+
+  /* ===== State ===== */
+  --color-state-disabled: #969da8;
+  --color-state-hover: rgba(76, 121, 255, 0.1); /* B10% */
+  --color-state-active: #4c79ff;
+  --color-state-focus: #4c79ff;
+
+  /* ===== Overlay / Dim ===== */
+  --color-dim-50: rgba(0, 0, 0, 0.5); /* B50% */
+  --color-dim-70: rgba(0, 0, 0, 0.7); /* B70% */
+
+  /* ===== Border ===== */
+  --color-border: #ccd0d6;
+
+  /* ===== Shadow ===== */
+  --shadow-1: 0 8px 8px 0 rgba(0, 0, 0, 0.05);
+
+  /* ===========================
+     Font Weight
+     =========================== */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ===========================
+     Typography (font-size / line-height)
+     --text-{name}: {size} 로 정의하면 text-{name} 클래스 생성
+     =========================== */
+
+  /* Heading — 24/30 (1.5rem / 1.875rem) */
+  --text-heading: 1.5rem;
+  --text-heading--line-height: 1.875rem;
+
+  /* Title — 20/24 (1.25rem / 1.5rem) */
+  --text-title: 1.25rem;
+  --text-title--line-height: 1.5rem;
+
+  /* Sub-title — 18/22 (1.125rem / 1.375rem) */
+  --text-subtitle: 1.125rem;
+  --text-subtitle--line-height: 1.375rem;
+
+  /* Body — 16/20 (1rem / 1.25rem) */
+  --text-body: 1rem;
+  --text-body--line-height: 1.25rem;
+
+  /* Body Small — 14/18 (0.875rem / 1.125rem) */
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.125rem;
+
+  /* Caption — 12/16 (0.75rem / 1rem) */
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+
+  /* Label — 10/12 (0.625rem / 0.75rem) */
+  --text-label: 0.625rem;
+  --text-label--line-height: 0.75rem;
+}
