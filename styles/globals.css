@@ -42,9 +42,7 @@
 
   /* ===== State ===== */
   --color-state-disabled: #969da8;
-  --color-state-hover: rgba(76, 121, 255, 0.1); /* B10% */
-  --color-state-active: #4c79ff;
-  --color-state-focus: #4c79ff;
+  --color-state-focus: #ff47ff;
 
   /* ===== Overlay / Dim ===== */
   --color-dim-50: rgba(0, 0, 0, 0.5); /* B50% */
@@ -55,6 +53,7 @@
 
   /* ===== Shadow ===== */
   --shadow-1: 0 8px 8px 0 rgba(0, 0, 0, 0.05);
+  --shadow-overlay: inset 0 0 0 9999px rgba(0, 0, 0, 0.1);
 
   /* ===========================
      Font Weight
