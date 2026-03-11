@@ -1,3 +1,4 @@
+import Modal from "@/components/common/modal";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        {children}
+        <Modal />
+      </body>
     </html>
   );
 }
