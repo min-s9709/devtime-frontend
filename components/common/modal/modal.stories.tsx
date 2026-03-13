@@ -17,60 +17,34 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => {
-    const { open } = useModalStore();
+    const { open, close, type } = useModalStore();
 
     return (
       <>
         <button
           className="px-4 py-2 rounded-md bg-primary text-white font-semibold cursor-pointer"
-          onClick={() =>
-            open(
-              <p className="text-body text-gray-600">
-                모달 내용이 여기에 들어갑니다.
-              </p>,
-            )
-          }
+          onClick={() => open("confirm")}
         >
           모달 열기
         </button>
-        <Modal />
-      </>
-    );
-  },
-};
-
-export const WithActions: Story = {
-  render: () => {
-    const { open, close } = useModalStore();
-
-    return (
-      <>
-        <button
-          className="px-4 py-2 rounded-md bg-primary text-white font-semibold cursor-pointer"
-          onClick={() =>
-            open(
-              <div className="flex flex-col gap-4">
-                <p className="text-body text-gray-600">
-                  정말 삭제하시겠습니까?
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    className="flex-1 h-12 rounded-[5px] bg-gray-100 text-gray-600 font-semibold cursor-pointer"
-                    onClick={close}
-                  >
-                    취소
-                  </button>
-                  <button className="flex-1 h-12 rounded-[5px] bg-primary text-white font-semibold cursor-pointer">
-                    확인
-                  </button>
-                </div>
-              </div>,
-            )
-          }
-        >
-          모달 열기
-        </button>
-        <Modal />
+        <Modal>
+          {type === "confirm" && (
+            <div className="flex flex-col gap-4">
+              <p className="text-body text-gray-600">정말 삭제하시겠습니까?</p>
+              <div className="flex gap-2">
+                <button
+                  className="flex-1 h-12 rounded-[5px] bg-gray-100 text-gray-600 font-semibold cursor-pointer"
+                  onClick={close}
+                >
+                  취소
+                </button>
+                <button className="flex-1 h-12 rounded-[5px] bg-primary text-white font-semibold cursor-pointer">
+                  확인
+                </button>
+              </div>
+            </div>
+          )}
+        </Modal>
       </>
     );
   },

@@ -1,19 +1,20 @@
 "use client";
 
-import { cn } from "@/utils/cn";
 import { useModalStore } from "@/store/use-modal-store";
-import { useSyncExternalStore } from "react";
-import { createPortal } from "react-dom";
+import { cn } from "@/utils/cn";
 import { AnimatePresence, motion } from "motion/react";
+import { type ReactNode, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 
 interface ModalProps {
   className?: string;
+  children?: ReactNode;
 }
 
 const subscribe = () => () => {};
 
-export default function Modal({ className }: ModalProps) {
-  const { isOpen, content, close } = useModalStore();
+export default function Modal({ className, children }: ModalProps) {
+  const { isOpen, close } = useModalStore();
 
   const mounted = useSyncExternalStore(
     subscribe,
@@ -33,6 +34,8 @@ export default function Modal({ className }: ModalProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={close}
+          role="dialog"
+          aria-modal="true"
         >
           <motion.div
             className={cn(
@@ -45,7 +48,7 @@ export default function Modal({ className }: ModalProps) {
             transition={{ duration: 0.2 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {content}
+            {children}
           </motion.div>
         </motion.div>
       )}
