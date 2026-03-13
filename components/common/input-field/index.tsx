@@ -15,9 +15,11 @@ export default function InputField({
   placeholder,
   className,
   type = "text",
+  id: idProp,
   ...props
 }: InputProps) {
-  const id = useId();
+  const generatedId = useId();
+  const id = idProp ?? generatedId;
   return (
     <div className="flex flex-col gap-2">
       {label && (

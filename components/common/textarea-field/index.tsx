@@ -14,9 +14,11 @@ export default function TextAreaField({
   label,
   placeholder,
   className,
+  id: idProp,
   ...props
 }: TextAreaProps) {
-  const id = useId();
+  const generatedId = useId();
+  const id = idProp ?? generatedId;
   return (
     <div className="flex flex-col gap-2">
       {label && (
