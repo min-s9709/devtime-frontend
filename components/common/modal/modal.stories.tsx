@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { fn } from "storybook/test";
 
 import { useModalStore } from "@/store/use-modal-store";
 import Modal from ".";
@@ -14,6 +15,8 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+const onConfirm = fn();
 
 export const Default: Story = {
   render: () => {
@@ -38,7 +41,13 @@ export const Default: Story = {
                 >
                   취소
                 </button>
-                <button className="flex-1 h-12 rounded-[5px] bg-primary text-white font-semibold cursor-pointer">
+                <button
+                  className="flex-1 h-12 rounded-[5px] bg-primary text-white font-semibold cursor-pointer"
+                  onClick={async () => {
+                    await onConfirm();
+                    close();
+                  }}
+                >
                   확인
                 </button>
               </div>
