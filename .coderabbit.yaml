@@ -16,7 +16,7 @@ reviews:
   changed_files_summary: true
   auto_review:
     enabled: true
-    drafts: enabled
+    drafts: false
     base_branches: []
 
 chat:
