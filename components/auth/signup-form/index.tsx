@@ -16,7 +16,7 @@ export default function SignupForm() {
   const methods = useForm();
 
   const handleClickSubmit = (data: unknown) => {
-    console.log(data);
+    // TODO: 회원가입 API 연동
   };
 
   return (

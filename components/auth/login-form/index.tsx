@@ -41,7 +41,7 @@ export default function LoginForm() {
   });
 
   const handleClickSubmit = (data: LoginFormData) => {
-    console.log(data);
+    // TODO: 로그인 API 연동
   };
 
   return (
