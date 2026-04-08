@@ -8,9 +8,7 @@ export default function TermsAgreement() {
   return (
     <section>
       <div className="flex justify-between">
-        <label className="text-label font-medium text-gray-600">
-          이용 약관
-        </label>
+        <span className="text-label font-medium text-gray-600">이용 약관</span>
         <div className="flex gap-2 items-center">
           <label htmlFor="auth-agree" className="text-label text-primary-30">
             동의함
