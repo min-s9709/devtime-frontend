@@ -31,6 +31,8 @@
     "@storybook/addon-docs": "^10.2.10",
     "@storybook/addon-vitest": "^10.2.10",
     "@storybook/nextjs-vite": "^10.2.10",
+    "@svgr/rollup": "^8.1.0",
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@types/node": "^20",
@@ -46,6 +48,7 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vite": "^7.3.1",
+    "vite-plugin-svgr": "^5.2.0",
     "vitest": "^4.0.18"
   }
 }
