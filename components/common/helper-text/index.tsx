@@ -19,8 +19,11 @@ export default function HelperText({
   status,
   className,
   message,
+  ...props
 }: HelperTextProps) {
   return (
-    <span className={cn(themeVariants[status], className)}>{message}</span>
+    <span {...props} className={cn(themeVariants[status], className)}>
+      {message}
+    </span>
   );
 }
