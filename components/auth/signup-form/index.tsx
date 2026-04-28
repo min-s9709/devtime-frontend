@@ -28,7 +28,7 @@ export default function SignupForm() {
         <span className="text-heading font-bold text-primary text-center">
           회원가입
         </span>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-10">
           <DuplicatedCheckField
             type="email"
             id="auth-id"
