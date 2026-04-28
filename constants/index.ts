@@ -55,3 +55,19 @@ export const TERMS_ARTICLES: TermsArticle[] = [
       "본 약관은 2024년 2월 1일부터 시행됩니다. 본 약관에 명시되지 않은 사항은 관련 법령 및 회사의 내부 정책에 따릅니다.",
   },
 ];
+
+export const SELECT_CAREER_OPTIONS: string[] = [
+  "경력 없음",
+  "0 - 3년",
+  "4 - 7년",
+  "8 - 10년",
+  "11년 이상",
+];
+
+export const SELECT_PURPOSE_OPTIONS: string[] = [
+  "취업 준비",
+  "이직 준비",
+  "단순 개발 역량 향상",
+  "회사 내 프로젝트 원활하게 수행",
+  "기타(직접 입력)",
+];

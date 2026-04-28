@@ -23,7 +23,9 @@ export default function InputField({
   return (
     <div className="flex flex-col gap-2">
       {label && (
-        <label htmlFor={id} className="text-label font-medium text-gray-600">{label}</label>
+        <label htmlFor={id} className="text-body-sm font-medium text-gray-600">
+          {label}
+        </label>
       )}
       <input
         id={id}

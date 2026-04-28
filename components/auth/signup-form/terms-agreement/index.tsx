@@ -10,7 +10,7 @@ export default function TermsAgreement() {
       <div className="flex justify-between">
         <span className="text-label font-medium text-gray-600">이용 약관</span>
         <div className="flex gap-2 items-center">
-          <label htmlFor="auth-agree" className="text-label text-primary-30">
+          <label htmlFor="auth-agree" className="text-body-sm text-primary-30">
             동의함
           </label>
           <Checkbox id="auth-agree" {...register("termsAgreed")} />

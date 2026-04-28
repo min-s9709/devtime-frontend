@@ -24,7 +24,7 @@ export default function DuplicatedCheckField({
 
   return (
     <section>
-      <label htmlFor={id} className="text-label font-medium text-gray-600">
+      <label htmlFor={id} className="text-body-sm font-medium text-gray-600">
         {label}
       </label>
       <div className="flex gap-2">
