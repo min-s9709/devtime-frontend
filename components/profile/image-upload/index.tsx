@@ -1,7 +1,7 @@
 import AddIcon from "@/assets/icons/plus.svg";
 import { cn } from "@/utils/cn";
 import Image from "next/image";
-import { useRef } from "react";
+import { startTransition, useEffect, useRef, useState } from "react";
 
 interface ImageUploadProps {
   value?: File | null;
@@ -12,7 +12,19 @@ interface ImageUploadProps {
 
 export default function ImageUpload({ value, onChange }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const previewUrl = value ? URL.createObjectURL(value) : null;
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!value) {
+      startTransition(() => setPreviewUrl(null));
+      return;
+    }
+
+    const url = URL.createObjectURL(value);
+    startTransition(() => setPreviewUrl(url));
+
+    return () => URL.revokeObjectURL(url);
+  }, [value]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
