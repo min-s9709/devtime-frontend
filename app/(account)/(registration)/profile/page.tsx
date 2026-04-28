@@ -1,3 +1,9 @@
+import ProfileForm from "@/components/profile/profile-form";
+
 export default function Profile() {
-  return <div>프로필 설정 페이지</div>;
+  return (
+    <div className="w-full min-h-screen flex justify-center items-center">
+      <ProfileForm />
+    </div>
+  );
 }
