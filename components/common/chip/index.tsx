@@ -14,14 +14,16 @@ export default function Chip({ id, name, onDelete }: ChipProps) {
   return (
     <div className="flex gap-2 items-center p-3 bg-primary-light-10 rounded-[5px] border border-primary ">
       <span className="text-primary text-body-sm font-semibold">{name}</span>
-      <button
-        type="button"
-        aria-label={`${name} 삭제`}
-        onClick={() => handleClick(id)}
-        className="shrink-0 cursor-pointer"
-      >
-        <CancelIcon width={20} height={20} className="text-primary" />
-      </button>
+      {onDelete && (
+        <button
+          type="button"
+          aria-label={`${name} 삭제`}
+          onClick={() => handleClick(id)}
+          className="shrink-0 cursor-pointer"
+        >
+          <CancelIcon width={20} height={20} className="text-primary" />
+        </button>
+      )}
     </div>
   );
 }

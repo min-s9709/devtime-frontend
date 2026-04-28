@@ -57,6 +57,8 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
+          aria-label="프로필 이미지 업로드"
+          aria-describedby="profile-image-help"
           className={cn(
             "relative w-30 h-30 border border-dashed border-primary rounded-lg cursor-pointer overflow-hidden",
             previewUrl && "border-none",
@@ -84,7 +86,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
             onChange={handleFileChange}
           />
         </button>
-        <span className="text-body-sm text-gray-500">
+        <span id="profile-image-help" className="text-body-sm text-gray-500">
           5MB 미만의 .png .jpg 파일
         </span>
       </div>
