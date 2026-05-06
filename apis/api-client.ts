@@ -1,6 +1,10 @@
 import ky, { Options, ResponsePromise } from "ky";
 
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/`;
+const rawBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+if (!rawBaseUrl) {
+  throw new Error("NEXT_PUBLIC_API_BASE_URL is not defined");
+}
+const API_BASE_URL = `${rawBaseUrl.replace(/\/+$/, "")}/api/`;
 
 const http = ky.create({
   prefixUrl: API_BASE_URL,
@@ -27,20 +31,24 @@ async function parseResponse<T>(res: ResponsePromise): Promise<T> {
   return await res.json<T>();
 }
 
-// TODO: API 호출 (GET, POST, PUT, DELETE 등) 별로 일관 된 처리를 할 수 있는 래퍼 함수 작성
+const normalizePath = (url: string) => url.replace(/^\/+/, "");
+
+// API 호출 (GET, POST, PUT, DELETE 등) 별로 일관 된 처리를 할 수 있는 래퍼 함수 작성
 export const httpClient = {
   get: <T>(url: string, options?: Options) =>
-    parseResponse<T>(http.get(url, options)),
+    parseResponse<T>(http.get(normalizePath(url), options)),
 
   post: <T>(url: string, body?: unknown, options?: Options) =>
-    parseResponse<T>(http.post(url, { json: body, ...options })),
+    parseResponse<T>(http.post(normalizePath(url), { json: body, ...options })),
 
   put: <T>(url: string, body?: unknown, options?: Options) =>
-    parseResponse<T>(http.put(url, { json: body, ...options })),
+    parseResponse<T>(http.put(normalizePath(url), { json: body, ...options })),
 
   patch: <T>(url: string, body?: unknown, options?: Options) =>
-    parseResponse<T>(http.patch(url, { json: body, ...options })),
+    parseResponse<T>(
+      http.patch(normalizePath(url), { json: body, ...options }),
+    ),
 
   delete: <T>(url: string, options?: Options) =>
-    parseResponse<T>(http.delete(url, options)),
+    parseResponse<T>(http.delete(normalizePath(url), options)),
 };
