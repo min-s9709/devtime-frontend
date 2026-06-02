@@ -1,7 +1,12 @@
 import Button from "@/components/common/button";
 import Link from "next/link";
+import { useFormContext } from "react-hook-form";
 
 export default function SignupFooter() {
+  const {
+    formState: { isValid },
+  } = useFormContext();
+
   return (
     <section>
       <Button
@@ -9,6 +14,7 @@ export default function SignupFooter() {
         variant="Primary"
         value="회원가입"
         className="w-full"
+        disabled={!isValid}
       />
       <div className="flex justify-center gap-3 mt-6">
         <span className="text-body font-regular text-primary">

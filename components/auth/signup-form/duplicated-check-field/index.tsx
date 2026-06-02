@@ -1,5 +1,8 @@
 import Button from "@/components/common/button";
+import HelperText from "@/components/common/helper-text";
 import InputField from "@/components/common/input-field";
+import { useCheckDuplicate } from "@/hooks/queries/use-check-duplicate";
+import { cn } from "@/utils/cn";
 import { useFormContext } from "react-hook-form";
 
 interface DuplicatedCheckFieldProps {
@@ -15,12 +18,38 @@ export default function DuplicatedCheckField({
   label,
   placeholder,
 }: DuplicatedCheckFieldProps) {
-  const { register } = useFormContext();
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext();
 
-  const handleDuplicateClick = async (type: string) => {
-    // 이메일이나 닉네임 중복확인 API 호출 필요 (type을 통해 구분)
-    console.log("클릭", type);
+  const fieldValue = watch(type);
+  const isValid = !!fieldValue && !errors[type];
+  const { mutate, isPending, isSuccess, isError, error, data } =
+    useCheckDuplicate();
+
+  const handleDuplicateClick = () => {
+    mutate({ type, value: fieldValue });
   };
+
+  const getHelperText = () => {
+    switch (true) {
+      case !!errors[type]:
+        return { status: "error" as const, message: errors[type].message as string };
+      case isError:
+        return { status: "error" as const, message: error.message };
+      case isSuccess && !!data:
+        return {
+          status: data.available ? ("success" as const) : ("error" as const),
+          message: data.message,
+        };
+      default:
+        return null;
+    }
+  };
+
+  const helperText = getHelperText();
 
   return (
     <section>
@@ -29,18 +58,26 @@ export default function DuplicatedCheckField({
       </label>
       <div className="flex gap-2">
         <InputField
-          {...register(type)}
+          {...register(type, { required: true })}
           id={id}
           placeholder={placeholder}
-          className="w-82"
+          className={cn("w-82", errors[type] && "border border-negative")}
         />
         <Button
           variant="Secondary"
-          value="중복 확인"
+          value={isPending ? "확인 중" : "중복 확인"}
           className="w-21 h-11 text-body-sm"
-          onClick={() => handleDuplicateClick(type)}
+          disabled={!isValid || isPending}
+          onClick={handleDuplicateClick}
         />
       </div>
+      {helperText && (
+        <HelperText
+          status={helperText.status}
+          message={helperText.message}
+          className="mt-2"
+        />
+      )}
     </section>
   );
 }

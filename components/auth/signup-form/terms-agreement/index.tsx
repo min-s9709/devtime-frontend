@@ -3,7 +3,10 @@ import { TERMS_ARTICLES } from "@/constants";
 import { useFormContext } from "react-hook-form";
 
 export default function TermsAgreement() {
-  const { register } = useFormContext();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
 
   return (
     <section>
@@ -13,7 +16,11 @@ export default function TermsAgreement() {
           <label htmlFor="auth-agree" className="text-body-sm text-primary-30">
             동의함
           </label>
-          <Checkbox id="auth-agree" {...register("termsAgreed")} />
+          <Checkbox
+            id="auth-agree"
+            {...register("termsAgreed", { required: true })}
+            className={errors.termsAgreed && "border border-negative"}
+          />
         </div>
       </div>
       <div className="w-full h-27.5 px-4 py-3 rounded-[5px] overflow-auto bg-gray-50 text-caption text-gray-600">

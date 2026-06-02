@@ -4,29 +4,13 @@ import MainLogo from "@/assets/icons/main-logo.svg";
 import Button from "@/components/common/button";
 import HelperText from "@/components/common/helper-text";
 import InputField from "@/components/common/input-field";
+import { useLogin } from "@/hooks/queries/use-login";
+import { LoginFormData, loginSchema } from "@/schemas/login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import z from "zod";
 
 export default function LoginForm() {
-  const loginSchema = z.object({
-    email: z
-      .string()
-      .min(1, "이메일을 입력해 주세요.")
-      .email("이메일 형식으로 작성해 주세요."),
-    password: z
-      .string()
-      .min(1, "비밀번호를 입력해 주세요.")
-      .min(8, "비밀번호는 8자 이상, 영문과 숫자 조합이어야 합니다.")
-      .regex(
-        /^(?=.*[a-zA-Z])(?=.*\d)/,
-        "비밀번호는 8자 이상, 영문과 숫자 조합이어야 합니다.",
-      ),
-  });
-
-  type LoginFormData = z.infer<typeof loginSchema>;
-
   const {
     register,
     handleSubmit,
@@ -40,8 +24,10 @@ export default function LoginForm() {
     },
   });
 
+  const { mutate: loginMutate, isPending } = useLogin();
+
   const handleClickSubmit = (data: LoginFormData) => {
-    // TODO: 로그인 API 연동
+    loginMutate(data);
   };
 
   return (
@@ -86,7 +72,7 @@ export default function LoginForm() {
             value="로그인"
             variant="Primary"
             type="submit"
-            disabled={!isValid}
+            disabled={!isValid || isPending}
           />
           <Link
             href="/signup"
