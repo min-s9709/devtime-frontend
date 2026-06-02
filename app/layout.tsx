@@ -1,4 +1,5 @@
 import QueryProvider from "@/apis/query-provider";
+import Modal from "@/components/common/modal";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 
@@ -15,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="font-sans">
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+          <Modal />
+        </QueryProvider>
       </body>
     </html>
   );
