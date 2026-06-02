@@ -1,27 +1,46 @@
+import { useAuthStore } from "@/store/use-auth-store";
 import ky, { Options, ResponsePromise } from "ky";
+import { refreshAccessToken } from "./auth";
 
 const rawBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!rawBaseUrl) {
   throw new Error("NEXT_PUBLIC_API_BASE_URL is not defined");
 }
-const API_BASE_URL = `${rawBaseUrl.replace(/\/+$/, "")}/api/`;
+export const API_BASE_URL = `${rawBaseUrl.replace(/\/+$/, "")}/api/`;
+
+let refreshPromise: Promise<string | null> | null = null;
 
 const http = ky.create({
   prefixUrl: API_BASE_URL,
   timeout: 10000,
   retry: 0,
   credentials: "include",
-  headers: {
-    "Content-Type": "application/json",
-  },
   hooks: {
-    // 요청 전 처리 (예: Authorization 헤더에 토큰 자동 주입)
-    beforeRequest: [],
+    beforeRequest: [
+      (request) => {
+        const accessToken = useAuthStore.getState().accessToken;
+        if (accessToken) {
+          request.headers.set("Authorization", `Bearer ${accessToken}`);
+        }
+      },
+    ],
+    afterResponse: [
+      async (request, options, response) => {
+        if (response.status !== 401) return;
 
-    //공통 응답 처리 (예: 401 시 토큰 갱신 또는 로그아웃)
-    afterResponse: [],
+        if (!refreshPromise) {
+          refreshPromise = refreshAccessToken().finally(() => {
+            refreshPromise = null;
+          });
+        }
 
-    // 에러 응답 파싱 및 커스텀 에러 객체 생성
+        const newAccessToken = await refreshPromise;
+        if (!newAccessToken) return;
+
+        request.headers.set("Authorization", `Bearer ${newAccessToken}`);
+        return ky(request, options);
+      },
+    ],
     beforeError: [],
   },
 });
@@ -39,14 +58,27 @@ export const httpClient = {
     parseResponse<T>(http.get(normalizePath(url), options)),
 
   post: <T>(url: string, body?: unknown, options?: Options) =>
-    parseResponse<T>(http.post(normalizePath(url), { json: body, ...options })),
+    parseResponse<T>(
+      http.post(normalizePath(url), {
+        ...(body !== undefined && { json: body }),
+        ...options,
+      }),
+    ),
 
   put: <T>(url: string, body?: unknown, options?: Options) =>
-    parseResponse<T>(http.put(normalizePath(url), { json: body, ...options })),
+    parseResponse<T>(
+      http.put(normalizePath(url), {
+        ...(body !== undefined && { json: body }),
+        ...options,
+      }),
+    ),
 
   patch: <T>(url: string, body?: unknown, options?: Options) =>
     parseResponse<T>(
-      http.patch(normalizePath(url), { json: body, ...options }),
+      http.patch(normalizePath(url), {
+        ...(body !== undefined && { json: body }),
+        ...options,
+      }),
     ),
 
   delete: <T>(url: string, options?: Options) =>
