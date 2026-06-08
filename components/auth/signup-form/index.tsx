@@ -16,14 +16,16 @@ export default function SignupForm() {
     mode: "onChange",
     defaultValues: {
       email: "",
+      emailChecked: "",
       nickname: "",
+      nicknameChecked: "",
       password: "",
       confirmPassword: "",
       termsAgreed: false,
     },
   });
 
-  const { mutate: signupMutate } = useSignup();
+  const { mutate: signupMutate, isPending } = useSignup();
 
   const handleClickSubmit = (data: SignupFormData) => {
     signupMutate({
@@ -98,7 +100,7 @@ export default function SignupForm() {
           <TermsAgreement />
         </div>
         <div>
-          <SignupFooter />
+          <SignupFooter isPending={isPending} />
         </div>
       </form>
     </FormProvider>

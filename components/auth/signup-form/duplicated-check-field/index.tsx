@@ -21,25 +21,40 @@ export default function DuplicatedCheckField({
   const {
     register,
     watch,
+    setValue,
     formState: { errors },
   } = useFormContext();
 
   const fieldValue = watch(type);
   const isValid = !!fieldValue && !errors[type];
-  const { mutate, isPending, isSuccess, isError, error, data } =
+  const { mutate, isPending, isSuccess, isError, error, data, variables } =
     useCheckDuplicate();
 
+  // 마지막으로 검사한 값과 현재 입력값이 다르면 이전 결과는 무효 처리한다.
+  const isResultStale = variables?.value !== fieldValue;
+
   const handleDuplicateClick = () => {
-    mutate({ type, value: fieldValue });
+    mutate(
+      { type, value: fieldValue },
+      {
+        // 중복확인에 성공(사용 가능)한 값만 폼에 기록해 제출 게이트와 연결한다.
+        onSuccess: (res) => {
+          if (res.available) setValue(`${type}Checked`, fieldValue);
+        },
+      },
+    );
   };
 
   const getHelperText = () => {
     switch (true) {
       case !!errors[type]:
-        return { status: "error" as const, message: errors[type].message as string };
-      case isError:
+        return {
+          status: "error" as const,
+          message: errors[type].message as string,
+        };
+      case !isResultStale && isError:
         return { status: "error" as const, message: error.message };
-      case isSuccess && !!data:
+      case !isResultStale && isSuccess && !!data:
         return {
           status: data.available ? ("success" as const) : ("error" as const),
           message: data.message,

@@ -6,7 +6,9 @@ export const signupSchema = z
       .string()
       .min(1, "이메일을 입력해 주세요.")
       .email("이메일 형식으로 작성해 주세요."),
+    emailChecked: z.string(),
     nickname: z.string().min(1, "닉네임을 입력해 주세요."),
+    nicknameChecked: z.string(),
     password: z
       .string()
       .min(1, "비밀번호를 입력해 주세요.")

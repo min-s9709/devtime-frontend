@@ -10,7 +10,7 @@ import { createElement } from "react";
 
 export const useSignup = () => {
   const router = useRouter();
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async (data: SignupRequest) => {
       return await signup(data);
     },
@@ -28,5 +28,5 @@ export const useSignup = () => {
     },
   });
 
-  return { mutate };
+  return { mutate, isPending };
 };

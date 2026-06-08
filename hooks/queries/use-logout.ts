@@ -9,7 +9,7 @@ export const useLogout = () => {
     mutationFn: async () => {
       return await logout();
     },
-    onSuccess: () => {
+    onSettled: () => {
       setAuth({
         accessToken: "",
         refreshToken: "",
