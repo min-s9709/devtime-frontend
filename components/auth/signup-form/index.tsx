@@ -1,22 +1,39 @@
 "use client";
 
 import TermsAgreement from "@/components/auth/signup-form/terms-agreement";
+import HelperText from "@/components/common/helper-text";
 import InputField from "@/components/common/input-field";
+import { useSignup } from "@/hooks/queries/use-signup";
+import { SignupFormData, signupSchema } from "@/schemas/signup";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import DuplicatedCheckField from "./duplicated-check-field";
 import SignupFooter from "./signup-footer";
 
 export default function SignupForm() {
-  //   const {
-  //     register,
-  //     handleSubmit,
-  //     formState: { errors, isValid },
-  //   } = useForm();
+  const methods = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+      emailChecked: "",
+      nickname: "",
+      nicknameChecked: "",
+      password: "",
+      confirmPassword: "",
+      termsAgreed: false,
+    },
+  });
 
-  const methods = useForm();
+  const { mutate: signupMutate, isPending } = useSignup();
 
-  const handleClickSubmit = (data: unknown) => {
-    // TODO: 회원가입 API 연동
+  const handleClickSubmit = (data: SignupFormData) => {
+    signupMutate({
+      email: data.email,
+      nickname: data.nickname,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+    });
   };
 
   return (
@@ -47,7 +64,17 @@ export default function SignupForm() {
               label="비밀번호"
               type="password"
               placeholder="비밀번호를 입력해 주세요."
+              className={
+                methods.formState.errors.password && "border border-negative"
+              }
             />
+            {methods.formState.errors.password && (
+              <HelperText
+                status="error"
+                message={methods.formState.errors.password.message as string}
+                className="mt-2"
+              />
+            )}
           </section>
           <section>
             <InputField
@@ -55,12 +82,25 @@ export default function SignupForm() {
               label="비밀번호 확인"
               type="password"
               placeholder="비밀번호를 다시 입력해 주세요."
+              className={
+                methods.formState.errors.confirmPassword &&
+                "border border-negative"
+              }
             />
+            {methods.formState.errors.confirmPassword && (
+              <HelperText
+                status="error"
+                message={
+                  methods.formState.errors.confirmPassword.message as string
+                }
+                className="mt-2"
+              />
+            )}
           </section>
           <TermsAgreement />
         </div>
         <div>
-          <SignupFooter />
+          <SignupFooter isPending={isPending} />
         </div>
       </form>
     </FormProvider>
