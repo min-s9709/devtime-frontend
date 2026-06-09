@@ -1,5 +1,6 @@
 import QueryProvider from "@/apis/query-provider";
 import Modal from "@/components/common/modal";
+import AuthProvider from "@/components/providers/auth-provider";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 
@@ -17,8 +18,10 @@ export default function RootLayout({
     <html lang="ko">
       <body className="font-sans">
         <QueryProvider>
-          {children}
-          <Modal />
+          <AuthProvider>
+            {children}
+            <Modal />
+          </AuthProvider>
         </QueryProvider>
       </body>
     </html>

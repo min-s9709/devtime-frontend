@@ -10,9 +10,9 @@ export const useLogout = () => {
       return await logout();
     },
     onSettled: () => {
+      // 서버 응답 성공/실패와 무관하게 로컬 세션은 항상 정리한다.
       setAuth({
         accessToken: "",
-        refreshToken: "",
         isFirstLogin: false,
         isDuplicateLogin: false,
       });

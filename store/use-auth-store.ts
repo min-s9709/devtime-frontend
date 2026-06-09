@@ -1,25 +1,17 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 interface AuthState {
   accessToken: string;
-  refreshToken: string;
   isFirstLogin: boolean;
   isDuplicateLogin: boolean;
   setAuth: (auth: Omit<AuthState, "setAuth">) => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      accessToken: "",
-      refreshToken: "",
-      isFirstLogin: false,
-      isDuplicateLogin: false,
-      setAuth: (auth) => set(auth),
-    }),
-    {
-      name: "auth-storage",
-    },
-  ),
-);
+// refreshToken은 Next.js BFF가 HttpOnly 쿠키로 관리한다.
+// 클라이언트는 accessToken만 메모리에 보관한다.
+export const useAuthStore = create<AuthState>((set) => ({
+  accessToken: "",
+  isFirstLogin: false,
+  isDuplicateLogin: false,
+  setAuth: (auth) => set(auth),
+}));
