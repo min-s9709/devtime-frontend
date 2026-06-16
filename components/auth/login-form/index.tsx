@@ -24,10 +24,10 @@ export default function LoginForm() {
     },
   });
 
-  const { mutate: loginMutate, isPending } = useLogin();
+  const { login, isPending } = useLogin();
 
   const handleClickSubmit = (data: LoginFormData) => {
-    loginMutate(data);
+    login(data);
   };
 
   return (
@@ -72,6 +72,7 @@ export default function LoginForm() {
             value="로그인"
             variant="Primary"
             type="submit"
+            className="w-full"
             disabled={!isValid || isPending}
           />
           <Link

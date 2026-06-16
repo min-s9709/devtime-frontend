@@ -25,10 +25,10 @@ export default function SignupForm() {
     },
   });
 
-  const { mutate: signupMutate, isPending } = useSignup();
+  const { signup, isPending } = useSignup();
 
   const handleClickSubmit = (data: SignupFormData) => {
-    signupMutate({
+    signup({
       email: data.email,
       nickname: data.nickname,
       password: data.password,

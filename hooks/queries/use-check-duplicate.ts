@@ -8,7 +8,7 @@ interface CheckDuplicateParams {
 }
 
 export const useCheckDuplicate = () => {
-  return useMutation({
+  const { mutate, ...rest } = useMutation({
     mutationFn: async ({ type, value }: CheckDuplicateParams) => {
       try {
         return await checkDuplicate(type, value);
@@ -21,4 +21,6 @@ export const useCheckDuplicate = () => {
       }
     },
   });
+
+  return { checkDuplicate: mutate, ...rest };
 };

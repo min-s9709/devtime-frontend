@@ -27,14 +27,21 @@ export default function DuplicatedCheckField({
 
   const fieldValue = watch(type);
   const isValid = !!fieldValue && !errors[type];
-  const { mutate, isPending, isSuccess, isError, error, data, variables } =
-    useCheckDuplicate();
+  const {
+    checkDuplicate,
+    isPending,
+    isSuccess,
+    isError,
+    error,
+    data,
+    variables,
+  } = useCheckDuplicate();
 
   // 마지막으로 검사한 값과 현재 입력값이 다르면 이전 결과는 무효 처리한다.
   const isResultStale = variables?.value !== fieldValue;
 
   const handleDuplicateClick = () => {
-    mutate(
+    checkDuplicate(
       { type, value: fieldValue },
       {
         // 중복확인에 성공(사용 가능)한 값만 폼에 기록해 제출 게이트와 연결한다.

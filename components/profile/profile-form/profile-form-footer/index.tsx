@@ -1,6 +1,35 @@
-import Button from "@/components/common/button";
+"use client";
 
-export default function ProfileFormFooter() {
+import Button from "@/components/common/button";
+import ConfirmModal from "@/components/common/modal/confirm-modal";
+import { PATH } from "@/constants/path";
+import { useModalStore } from "@/store/use-modal-store";
+import { useRouter } from "next/navigation";
+import { createElement } from "react";
+
+interface ProfileFormFooterProps {
+  disabled?: boolean;
+}
+
+export default function ProfileFormFooter({
+  disabled,
+}: ProfileFormFooterProps) {
+  const router = useRouter();
+  const open = useModalStore((state) => state.open);
+
+  const handleSkip = () => {
+    open(
+      createElement(ConfirmModal, {
+        title: "프로필 설정을 건너뛸까요?",
+        description:
+          "프로필을 설정하지 않을 경우 일부 기능 사용에 제한이 생길 수 있습니다. 그래도 프로필 설정을 건너뛰시겠습니까?",
+        cancelText: "건너뛰기",
+        confirmText: "계속 설정하기",
+        onCancel: () => router.replace(PATH.HOME),
+      }),
+    );
+  };
+
   return (
     <section>
       <Button
@@ -8,13 +37,14 @@ export default function ProfileFormFooter() {
         variant="Primary"
         value="저장하기"
         className="w-full"
+        disabled={disabled}
       />
       <div className="flex justify-center gap-3 mt-6">
         <span className="text-body font-regular text-primary">
           다음에 하시겠어요?
         </span>
         <span
-          onClick={() => console.log("클릭")}
+          onClick={handleSkip}
           className="text-body font-bold text-primary cursor-pointer"
         >
           건너뛰기

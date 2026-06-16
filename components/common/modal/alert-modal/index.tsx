@@ -25,7 +25,7 @@ export default function AlertModal({ title, description, onConfirm }: AlertModal
           <p className="text-body text-gray-600 whitespace-pre-line">{description}</p>
         )}
       </div>
-      <Button variant="Primary" value="확인" onClick={handleConfirm} className="self-end" />
+      <Button variant="Primary" value="확인" onClick={handleConfirm} className="w-full self-end" />
     </div>
   );
 }
