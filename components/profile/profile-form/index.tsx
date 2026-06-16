@@ -7,34 +7,56 @@ import InputField from "@/components/common/input-field";
 import SelectDropdown from "@/components/common/select-dropdown";
 import ImageUpload from "@/components/profile/image-upload";
 import ProfileFormFooter from "@/components/profile/profile-form/profile-form-footer";
-import { SELECT_CAREER_OPTIONS, SELECT_PURPOSE_OPTIONS } from "@/constants";
+import {
+  CUSTOM_PURPOSE,
+  SELECT_CAREER_OPTIONS,
+  SELECT_PURPOSE_OPTIONS,
+} from "@/constants";
+import { useCreateProfile } from "@/hooks/queries/use-create-profile";
+import { useUploadImage } from "@/hooks/queries/use-upload-image";
+import { ProfileFormData, profileSchema } from "@/schemas/profile";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 export default function ProfileForm() {
-  const { control, register, handleSubmit, setValue, getValues } = useForm({
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    formState: { isValid },
+  } = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    mode: "onChange",
     defaultValues: {
       career: "",
       purpose: "",
       customPurpose: "",
       goal: "",
-      techStacks: [] as TechStackItem[],
-      profileImage: null as File | null,
+      techStacks: [],
+      profileImage: null,
     },
   });
   const purpose = useWatch({ control, name: "purpose" });
   const techStacks = useWatch({ control, name: "techStacks" });
+  const { uploadImage, isUploading } = useUploadImage();
+  const { createProfile, isPending } = useCreateProfile();
 
-  const onSubmit = handleSubmit((data) => {
-    const submitData = {
+  const onSubmit = handleSubmit(async (data) => {
+    // 이미지가 있을 때만 presigned URL로 업로드하고, 저장용 key를 받아온다.
+    const profileImage = data.profileImage
+      ? await uploadImage(data.profileImage)
+      : "";
+
+    await createProfile({
       career: data.career,
       purpose:
-        data.purpose === "기타(직접 입력)" ? data.customPurpose : data.purpose,
+        data.purpose === CUSTOM_PURPOSE ? data.customPurpose : data.purpose,
       goal: data.goal,
       techStacks: data.techStacks.map((item) => item.name),
-      // 추후에 api연동하고 presignedURL 적용하면서 수정 예정
-      profileImage: data.profileImage?.name ?? "",
-    };
-    console.log(submitData);
+      profileImage,
+    });
   });
 
   const handleSelect = (item: TechStackItem) => {
@@ -88,7 +110,7 @@ export default function ProfileForm() {
               />
             )}
           />
-          {purpose === "기타(직접 입력)" && (
+          {purpose === CUSTOM_PURPOSE && (
             <InputField
               placeholder="공부 목적을 입력해 주세요."
               {...register("customPurpose")}
@@ -128,7 +150,7 @@ export default function ProfileForm() {
             <ImageUpload value={field.value} onChange={field.onChange} />
           )}
         />
-        <ProfileFormFooter />
+        <ProfileFormFooter disabled={!isValid || isUploading || isPending} />
       </div>
     </form>
   );

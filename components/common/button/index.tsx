@@ -8,7 +8,7 @@ interface ButtonProps extends ComponentProps<"button"> {
 }
 
 const base =
-  "w-full h-12 rounded-[5px] text-subtitle py-3 px-4 cursor-pointer font-semibold outline-none";
+  "h-12 rounded-[5px] text-subtitle py-3 px-4 cursor-pointer font-semibold outline-none";
 
 const themeVariants = {
   Primary: `${base} bg-primary text-white hover:shadow-overlay active:shadow-overlay disabled:bg-gray-400 disabled:text-gray-300 disabled:cursor-not-allowed`,

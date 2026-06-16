@@ -64,10 +64,12 @@ export const SELECT_CAREER_OPTIONS: string[] = [
   "11년 이상",
 ];
 
+export const CUSTOM_PURPOSE = "기타(직접 입력)";
+
 export const SELECT_PURPOSE_OPTIONS: string[] = [
   "취업 준비",
   "이직 준비",
   "단순 개발 역량 향상",
   "회사 내 프로젝트 원활하게 수행",
-  "기타(직접 입력)",
+  CUSTOM_PURPOSE,
 ];
