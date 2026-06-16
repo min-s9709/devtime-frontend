@@ -24,7 +24,7 @@ export function useAutoComplete(onSelect?: (item: TechStackItem) => void) {
 
   // 입력값을 디바운스해 검색어별로 GET /tech-stacks?keyword= 를 조회한다.
   const debouncedQuery = useDebounce(query, 300);
-  const { techStacks } = useTechStacks(debouncedQuery);
+  const { techStacks, isLoading } = useTechStacks(debouncedQuery);
   const { createTechStack, isCreating } = useCreateTechStack();
 
   useEffect(() => {
@@ -60,17 +60,26 @@ export function useAutoComplete(onSelect?: (item: TechStackItem) => void) {
     const name = query.trim();
     if (!name || isCreating) return;
 
-    const created = await createTechStack(name);
-    onSelect?.(created);
-    setQuery("");
-    setIsOpen(false);
+    try {
+      const created = await createTechStack(name);
+      onSelect?.(created);
+      setQuery("");
+      setIsOpen(false);
+    } catch (error) {
+      // 생성 실패 시 입력값과 드롭다운을 유지해 사용자가 재시도할 수 있게 한다.
+      console.error("기술스택 생성에 실패했습니다.", error);
+    }
   };
 
-  // 입력값이 기존 기술스택과 매칭되지 않을 때만 Enter로 신규 생성한다.
+  // Enter로 신규 생성하려면 (1) 디바운스가 따라잡아 조회 결과가 현재 입력과
+  // 일치하고(debouncedQuery === query) (2) 조회가 끝났으며(!isLoading)
+  // (3) 매칭되는 기존 항목이 없어야 한다. 로딩 중 조회 결과를 신뢰해 오생성하는 것을 막는다.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== "Enter") return;
     e.preventDefault(); // 폼 제출 방지
-    if (techStacks.length === 0) handleAddNewItem();
+
+    const isResultReady = debouncedQuery === query && !isLoading;
+    if (isResultReady && techStacks.length === 0) handleAddNewItem();
   };
 
   return {
