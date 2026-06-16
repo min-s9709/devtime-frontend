@@ -55,5 +55,5 @@ export const useLogin = () => {
     },
   });
 
-  return { mutate, isPending, isError };
+  return { login: mutate, isPending, isError };
 };

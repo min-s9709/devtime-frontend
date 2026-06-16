@@ -28,5 +28,5 @@ export const useSignup = () => {
     },
   });
 
-  return { mutate, isPending };
+  return { signup: mutate, isPending };
 };
