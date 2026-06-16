@@ -62,7 +62,9 @@ export default function ProfileForm() {
   const handleSelect = (item: TechStackItem) => {
     const current = getValues("techStacks");
     if (current.some((v) => v.id === item.id || v.name === item.name)) return;
-    setValue("techStacks", [...current, item]);
+    // setValue는 기본적으로 재검증을 트리거하지 않으므로, isValid가 갱신되도록
+    // shouldValidate를 명시한다. (techStacks 추가/삭제만으로 제출 버튼 활성화 반영)
+    setValue("techStacks", [...current, item], { shouldValidate: true });
   };
 
   const handleDelete = (id: number) => {
@@ -70,6 +72,7 @@ export default function ProfileForm() {
     setValue(
       "techStacks",
       current.filter((item) => item.id !== id),
+      { shouldValidate: true },
     );
   };
 

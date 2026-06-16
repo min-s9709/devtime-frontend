@@ -10,10 +10,12 @@ export const profileSchema = z
     techStacks: z
       .array(z.object({ id: z.number(), name: z.string() }))
       .min(1, "기술 스택을 1개 이상 등록해 주세요."),
+    // 프로필 이미지는 선택값이라 File(업로드함) 또는 null(미업로드) 모두 허용한다.
     // File 전역이 없는 환경(SSR)에서 instanceof가 던지지 않도록 typeof로 가드한다.
     profileImage: z.custom<File | null>(
-      (file) => typeof File !== "undefined" && file instanceof File,
-      { message: "프로필 이미지를 업로드해 주세요." },
+      (file) =>
+        file === null || (typeof File !== "undefined" && file instanceof File),
+      { message: "올바른 이미지 파일이 아닙니다." },
     ),
   })
   // 목적이 '기타'일 때만 직접 입력값을 필수로 요구한다.
