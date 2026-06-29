@@ -37,6 +37,21 @@ export interface PresignedUrlResponse {
   key: string;
 }
 
+export interface Profile {
+  email: string;
+  nickname: string;
+  // 프로필 설정을 건너뛴(또는 최초 로그인) 유저는 이 필드가 없다.
+  profile?: {
+    career: string;
+    purpose: string;
+    goal: string;
+    techStacks: string[];
+    profileImage: string;
+  };
+}
+
+export type ProfileResponse = Profile;
+
 export interface TechStack {
   id: number;
   name: string;
