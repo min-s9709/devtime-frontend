@@ -96,3 +96,10 @@
   --text-label: 0.625rem;
   --text-label--line-height: 0.75rem;
 }
+
+/* ===========================
+   Custom Utilities
+   =========================== */
+@utility bg-app-gradient {
+  background: linear-gradient(180deg, #f6f7f9 0%, #e9ecf5 100%);
+}

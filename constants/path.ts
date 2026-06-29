@@ -3,4 +3,7 @@ export const PATH = {
   LOGIN: "/login",
   SIGNUP: "/signup",
   PROFILE: "/profile",
+  DASHBOARD: "/dashboard",
+  RANKING: "/ranking",
+  MYPAGE: "/mypage",
 } as const;
