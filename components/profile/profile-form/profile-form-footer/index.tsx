@@ -4,6 +4,7 @@ import Button from "@/components/common/button";
 import ConfirmModal from "@/components/common/modal/confirm-modal";
 import { PATH } from "@/constants/path";
 import { useModalStore } from "@/store/use-modal-store";
+import { useProfileStore } from "@/store/use-profile-store";
 import { useRouter } from "next/navigation";
 import { createElement } from "react";
 
@@ -16,6 +17,7 @@ export default function ProfileFormFooter({
 }: ProfileFormFooterProps) {
   const router = useRouter();
   const open = useModalStore((state) => state.open);
+  const fetchProfile = useProfileStore((state) => state.fetchProfile);
 
   const handleSkip = () => {
     open(
@@ -25,7 +27,11 @@ export default function ProfileFormFooter({
           "프로필을 설정하지 않을 경우 일부 기능 사용에 제한이 생길 수 있습니다. 그래도 프로필 설정을 건너뛰시겠습니까?",
         cancelText: "건너뛰기",
         confirmText: "계속 설정하기",
-        onCancel: () => router.replace(PATH.HOME),
+        // 프로필은 안 만들지만 닉네임 등으로 NavBar를 로그인 상태로 채운다.
+        onCancel: async () => {
+          await fetchProfile();
+          router.replace(PATH.HOME);
+        },
       }),
     );
   };

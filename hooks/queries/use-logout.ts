@@ -1,9 +1,11 @@
 import { logout } from "@/apis/auth";
 import { useAuthStore } from "@/store/use-auth-store";
+import { useProfileStore } from "@/store/use-profile-store";
 import { useMutation } from "@tanstack/react-query";
 
 export const useLogout = () => {
   const setAuth = useAuthStore((state) => state.setAuth);
+  const clearProfile = useProfileStore((state) => state.clearProfile);
 
   const { mutate } = useMutation({
     mutationFn: async () => {
@@ -16,6 +18,7 @@ export const useLogout = () => {
         isFirstLogin: false,
         isDuplicateLogin: false,
       });
+      clearProfile();
     },
     onError: (error) => {
       console.error("Logout failed:", error);
