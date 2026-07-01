@@ -1,8 +1,11 @@
 @import "tailwindcss";
 @import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+@import "@fontsource/dseg7-classic/400.css";
+@import "@fontsource/dseg7-classic/700.css";
 
 @theme {
   --font-sans: "Pretendard Variable", "Pretendard", -apple-system, sans-serif;
+  --font-digital: "DSEG7 Classic", monospace;
 
   /* ===== Primary ===== */
   --color-primary: #4c79ff;
