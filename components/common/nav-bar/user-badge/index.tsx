@@ -74,7 +74,7 @@ export default function UserBadge({ profile }: UserBadgeProps) {
               onClick={() => setIsOpen(false)}
               className={menuItemClass}
             >
-              <UserIcon />
+              <UserIcon className="w-6 h-6" />
               마이페이지
             </Link>
           </li>
@@ -89,7 +89,7 @@ export default function UserBadge({ profile }: UserBadgeProps) {
               }}
               className={menuItemClass}
             >
-              <LogoutIcon />
+              <LogoutIcon className="w-6 h-6" />
               로그아웃
             </button>
           </li>

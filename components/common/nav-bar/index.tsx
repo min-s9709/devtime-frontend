@@ -27,7 +27,7 @@ export default function NavBar() {
     <header className="flex items-center justify-between py-4">
       <nav className="flex items-center gap-12">
         <Link href={PATH.HOME}>
-          <NavLogo />
+          <NavLogo width={148} height={40} />
         </Link>
         <ul className="flex gap-9">
           {NAV_LINKS.map(({ href, label }) => {

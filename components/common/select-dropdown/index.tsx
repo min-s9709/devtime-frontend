@@ -108,9 +108,9 @@ function Trigger() {
         {selectedValue || placeholder}
       </span>
       {isOpen ? (
-        <ChevronUp className="text-primary-gradient-end" />
+        <ChevronUp className="w-6 h-6 text-primary-gradient-end" />
       ) : (
-        <ChevronDown className="text-primary-gradient-end" />
+        <ChevronDown className="w-6 h-6 text-primary-gradient-end" />
       )}
     </button>
   );
