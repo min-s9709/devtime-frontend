@@ -1,8 +1,11 @@
 @import "tailwindcss";
 @import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+@import "@fontsource/dseg7-classic/400.css";
+@import "@fontsource/dseg7-classic/700.css";
 
 @theme {
   --font-sans: "Pretendard Variable", "Pretendard", -apple-system, sans-serif;
+  --font-digital: "DSEG7 Classic", monospace;
 
   /* ===== Primary ===== */
   --color-primary: #4c79ff;
@@ -95,4 +98,11 @@
   /* Label — 10/12 (0.625rem / 0.75rem) */
   --text-label: 0.625rem;
   --text-label--line-height: 0.75rem;
+}
+
+/* ===========================
+   Custom Utilities
+   =========================== */
+@utility bg-app-gradient {
+  background: linear-gradient(180deg, #f6f7f9 0%, #e9ecf5 100%);
 }

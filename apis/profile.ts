@@ -3,8 +3,12 @@ import { CreateProfileRequest, PresignedUrlRequest } from "@/types/request";
 import {
   CreateProfileResponse,
   PresignedUrlResponse,
+  ProfileResponse,
 } from "@/types/response";
 import { httpClient } from "./api-client";
+
+export const getProfile = () =>
+  httpClient.get<ProfileResponse>(ENDPOINTS.PROFILE);
 
 export const getPresignedUrl = (data: PresignedUrlRequest) =>
   httpClient.post<PresignedUrlResponse>(ENDPOINTS.PRESIGNED_URL, data);
