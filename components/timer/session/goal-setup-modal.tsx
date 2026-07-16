@@ -19,7 +19,10 @@ export default function GoalSetupModal() {
   const deleteTodo = useSessionStore((s) => s.deleteTodo);
 
   return (
-    <form className="w-160 flex flex-col gap-9 p-4">
+    <form
+      className="w-160 flex flex-col gap-9 p-4"
+      onSubmit={(e) => e.preventDefault()}
+    >
       <InputField
         placeholder="오늘의 목표를 입력해주세요"
         className="text-heading font-bold bg-white  focus:text-indigo"

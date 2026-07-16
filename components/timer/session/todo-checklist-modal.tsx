@@ -32,7 +32,10 @@ export default function TodoChecklistModal() {
   const listPhase = isEdit ? "setup" : "running";
 
   return (
-    <form className="w-160 flex flex-col gap-9 p-4">
+    <form
+      className="w-160 flex flex-col gap-9 p-4"
+      onSubmit={(e) => e.preventDefault()}
+    >
       <TodoInput onAdd={addTodo} />
       <section>
         <div className="flex justify-between mb-6">

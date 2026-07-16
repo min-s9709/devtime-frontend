@@ -16,7 +16,10 @@ export default function SessionReviewModal() {
   const toggleTodo = useSessionStore((s) => s.toggleTodo);
 
   return (
-    <form className="w-160 flex flex-col gap-9 p-6">
+    <form
+      className="w-160 flex flex-col gap-9 p-6"
+      onSubmit={(e) => e.preventDefault()}
+    >
       <section>
         <h2 className="text-title text-gray-700 font-bold">
           오늘도 수고하셨어요!
