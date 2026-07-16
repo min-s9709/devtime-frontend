@@ -61,7 +61,8 @@ export default function TodoCard({
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            // IME 조합 중 Enter(한글 확정)는 무시
+            if (e.key === "Enter" && !e.nativeEvent.isComposing) {
               e.preventDefault();
               onConfirm?.();
             }
