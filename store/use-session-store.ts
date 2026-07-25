@@ -1,4 +1,6 @@
+import type { GetStudyLogsResponse } from "@/types/response";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 // 학습 세션의 국면. 같은 TodoList를 국면별로 다르게 파생시켜 보여준다.
 export type SessionPhase = "setup" | "running" | "review" | "record";
@@ -26,6 +28,8 @@ interface SessionState {
   deleteTodo: (id: string) => void;
   toggleTodo: (id: string) => void;
   setReflection: (reflection: string) => void;
+  // 미종료 세션 복구: GET /api/study-logs/{studyLogId} 결과로 세션 내용을 채운다.
+  hydrateFromStudyLog: (data: GetStudyLogsResponse["data"]) => void;
   reset: () => void;
 }
 
@@ -37,10 +41,14 @@ const initialState = {
   editingId: null as string | null,
 };
 
-export const useSessionStore = create<SessionState>((set) => ({
-  ...initialState,
+// 세션 내용(목표·할 일·회고)도 새로고침에 살아남도록 저장한다. 시계(useTimerStore)와
+// 짝을 이뤄, 로컬에 세션이 살아있으면 부트스트랩이 서버 값으로 덮어쓰지 않는다.
+export const useSessionStore = create<SessionState>()(
+  persist(
+    (set) => ({
+      ...initialState,
 
-  setPhase: (phase) => set({ phase }),
+      setPhase: (phase) => set({ phase }),
   setGoal: (goal) => set({ goal }),
 
   addTodo: (content) =>
@@ -70,5 +78,31 @@ export const useSessionStore = create<SessionState>((set) => ({
     })),
 
   setReflection: (reflection) => set({ reflection }),
-  reset: () => set(initialState),
-}));
+
+  hydrateFromStudyLog: (data) =>
+    set({
+      phase: "running",
+      goal: data.todayGoal,
+      todos: data.tasks.map((t) => ({
+        id: t.id,
+        content: t.content,
+        done: t.isCompleted,
+      })),
+      reflection: data.review ?? "",
+    }),
+
+      reset: () => set(initialState),
+    }),
+    {
+      name: "devtime-session",
+      skipHydration: true,
+      // 편집 중 UI 상태(editingId)는 저장하지 않는다.
+      partialize: (s) => ({
+        phase: s.phase,
+        goal: s.goal,
+        todos: s.todos,
+        reflection: s.reflection,
+      }),
+    },
+  ),
+);
