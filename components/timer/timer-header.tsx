@@ -1,11 +1,14 @@
 "use client";
 
 import { useProfileStore } from "@/store/use-profile-store";
+import { useSessionStore } from "@/store/use-session-store";
+import { useTimerStore } from "@/store/use-timer-store";
 
 // 타이머 뷰 상단 제목 영역.
-// TODO: 세션 진행 중이면 설정한 학습 목표(useSessionStore.goal)를 표시
 export default function TimerHeader() {
   const profile = useProfileStore((state) => state.profile);
+  const status = useTimerStore((state) => state.status);
+  const goal = useSessionStore((state) => state.goal);
 
   if (!profile) {
     return (
@@ -18,6 +21,11 @@ export default function TimerHeader() {
         </p>
       </div>
     );
+  }
+
+  // 활성 타이머(복구/진행 중)가 있으면 설정된 오늘의 목표를 제목으로 보여준다.
+  if (status !== "idle" && goal) {
+    return <h1 className="text-7xl font-bold text-indigo">{goal}</h1>;
   }
 
   return (

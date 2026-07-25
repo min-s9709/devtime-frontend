@@ -1,19 +1,67 @@
 "use client";
 
+import { stopTimer } from "@/apis/timers";
 import Button from "@/components/common/button";
+import HelperText from "@/components/common/helper-text";
 import TextAreaField from "@/components/common/textarea-field";
 import TodoInput from "@/components/timer/todo/todo-input";
 import TodoList from "@/components/timer/todo/todo-list";
+import { useModalStore } from "@/store/use-modal-store";
 import { useSessionStore } from "@/store/use-session-store";
+import { useTimerStore } from "@/store/use-timer-store";
+import type { StopTimerRequest } from "@/types/request";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-// review 국면: 타이머 종료 후 결과 확인 + 한 줄 소감 작성
-// TODO: 저장 푸터 + completeSession 뮤테이션 연동
+const MIN_REVIEW_LENGTH = 15; // 학습 회고 최소 글자 수
+const MAX_REVIEW_LENGTH = 500; // 학습 회고 최대 글자 수
+
+// review 국면: 타이머 종료 후 결과 확인 + 한 줄 소감 작성 → stopTimer로 세션 확정
 export default function SessionReviewModal() {
   const todos = useSessionStore((s) => s.todos);
   const reflection = useSessionStore((s) => s.reflection);
   const setReflection = useSessionStore((s) => s.setReflection);
   const addTodo = useSessionStore((s) => s.addTodo);
   const toggleTodo = useSessionStore((s) => s.toggleTodo);
+  const setPhase = useSessionStore((s) => s.setPhase);
+
+  const timerId = useTimerStore((s) => s.timerId);
+  const close = useModalStore((s) => s.close);
+  const queryClient = useQueryClient();
+
+  const { mutate: finishSession, isPending } = useMutation({
+    mutationFn: () => {
+      if (!timerId) throw new Error("종료할 타이머가 없습니다.");
+
+      const payload: StopTimerRequest = {
+        // 종료 직전 pause()로 진행 구간이 커밋된 일자별 경과를 그대로 보낸다.
+        splitTimes: useTimerStore.getState().getSplitTimesSnapshot(),
+        review: reflection.trim(),
+        tasks: todos.map((t) => ({
+          content: t.content,
+          isCompleted: t.done,
+        })),
+      };
+      return stopTimer(timerId, payload);
+    },
+    onSuccess: () => {
+      // 세션 확정 완료 → 로컬 시계·세션·저장분을 모두 비운다(로그아웃 정리와 동일 패턴).
+      useTimerStore.getState().reset();
+      useSessionStore.getState().reset();
+      useTimerStore.persist.clearStorage();
+      useSessionStore.persist.clearStorage();
+      // 종료된 타이머가 부트스트랩에서 다시 복구되지 않도록 캐시 제거.
+      queryClient.removeQueries({ queryKey: ["timer"] });
+      close();
+    },
+  });
+
+  // 종료를 취소하면 진행 중이던(일시정지된) 세션으로 돌아간다.
+  const handleCancel = () => {
+    setPhase("running");
+    close();
+  };
+
+  const isReviewValid = reflection.trim().length >= MIN_REVIEW_LENGTH;
 
   return (
     <form
@@ -35,16 +83,40 @@ export default function SessionReviewModal() {
         onToggle={toggleTodo}
         className="h-80 overflow-y-auto"
       />
-      <TextAreaField
-        label="학습 회고"
-        placeholder="오늘 학습한 내용을 회고해 보세요(15자 이상 작성 필수)"
-        value={reflection}
-        onChange={(e) => setReflection(e.target.value)}
-      />
-      {/* TODO: 저장 버튼 */}
+      <div className="flex flex-col gap-2">
+        <TextAreaField
+          label="학습 회고"
+          placeholder="오늘 학습한 내용을 회고해 보세요(15자 이상 작성 필수)"
+          value={reflection}
+          onChange={(e) => setReflection(e.target.value)}
+          maxLength={MAX_REVIEW_LENGTH}
+        />
+        <div className="flex items-center">
+          {/* 최소 글자 미달일 때만 안내. 충족되면 사라진다. */}
+          {!isReviewValid && (
+            <HelperText
+              status="error"
+              message={`최소 ${MIN_REVIEW_LENGTH}자 이상 작성해주세요`}
+            />
+          )}
+          {/* 현재/최대 글자 수. 상한(500)에 도달하면 강조. ml-auto로 항상 우측. */}
+          <HelperText
+            status={
+              reflection.length >= MAX_REVIEW_LENGTH ? "error" : "neutral"
+            }
+            message={`${reflection.length}/${MAX_REVIEW_LENGTH}`}
+            className="ml-auto"
+          />
+        </div>
+      </div>
       <section className="flex justify-end gap-4">
-        <Button variant="Tertiary" value="취소" />
-        <Button variant="Secondary" value="공부 완료하기" />
+        <Button variant="Tertiary" value="취소" onClick={handleCancel} />
+        <Button
+          variant="Secondary"
+          value="공부 완료하기"
+          onClick={() => finishSession()}
+          disabled={!isReviewValid || !timerId || isPending}
+        />
       </section>
     </form>
   );

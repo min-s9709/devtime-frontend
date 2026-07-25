@@ -1,10 +1,14 @@
 "use client";
 
+import { updateStudyLog } from "@/apis/study-logs";
 import EditIcon from "@/assets/icons/edit.svg";
 import Button from "@/components/common/button";
 import TodoInput from "@/components/timer/todo/todo-input";
 import TodoList from "@/components/timer/todo/todo-list";
+import { useModalStore } from "@/store/use-modal-store";
 import { useSessionStore } from "@/store/use-session-store";
+import { useTimerStore } from "@/store/use-timer-store";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
 // running 국면: 타이머 진행 중 할 일 체크
@@ -20,12 +24,41 @@ export default function TodoChecklistModal() {
   const editContent = useSessionStore((s) => s.editContent);
   const stopEditing = useSessionStore((s) => s.stopEditing);
   const deleteTodo = useSessionStore((s) => s.deleteTodo);
+  const studyLogId = useTimerStore((s) => s.studyLogId);
+  const close = useModalStore((s) => s.close);
+
+  // 할 일 목록을 서버에 저장한다(PUT /api/study-logs/{studyLogId}/tasks).
+  const { mutate: saveTasks, isPending } = useMutation({
+    mutationFn: () => {
+      if (!studyLogId) throw new Error("저장할 학습 로그가 없습니다.");
+      return updateStudyLog(studyLogId, {
+        tasks: todos.map((t) => ({
+          content: t.content,
+          isCompleted: t.done,
+        })),
+      });
+    },
+    onError: (error) => {
+      console.error("할 일 목록 저장 실패:", error);
+    },
+  });
 
   const handleEditClick = () => {
     setIsEdit((prev) => {
       if (prev) stopEditing(); // 수정 모드 종료 시 편집 중이던 항목 정리
       return !prev;
     });
+  };
+
+  // 수정 모드("변경사항 저장하기")에서는 서버 저장 없이 수정 모드만 종료하고,
+  // 일반 모드("저장하기")에서만 서버에 할 일 목록을 저장한다.
+  const handleSaveClick = () => {
+    if (isEdit) {
+      stopEditing(); // 편집 중이던 항목 정리
+      setIsEdit(false);
+      return;
+    }
+    saveTasks();
   };
 
   // 수정 모드에선 setup처럼 adding/editing 카드로 렌더한다.
@@ -64,12 +97,13 @@ export default function TodoChecklistModal() {
         />
       </section>
 
-      {/* TODO: 닫기 버튼 */}
       <section className="flex justify-end gap-4">
-        <Button variant="Tertiary" value="취소" />
+        <Button variant="Tertiary" value="취소" onClick={close} />
         <Button
           variant="Secondary"
           value={isEdit ? "변경사항 저장하기" : "저장하기"}
+          onClick={handleSaveClick}
+          disabled={(!isEdit && !studyLogId) || isPending}
         />
       </section>
     </form>
