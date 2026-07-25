@@ -6,4 +6,6 @@ export const ENDPOINTS = {
   PRESIGNED_URL: "file/presigned-url",
   PROFILE: "profile",
   TECH_STACKS: "tech-stacks",
+  TIMERS: "timers",
+  STUDY_LOGS: "study-logs",
 } as const;

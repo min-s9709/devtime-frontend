@@ -30,3 +30,22 @@ export interface CreateProfileRequest {
 export interface CreateTechStackRequest {
   name: string;
 }
+
+export interface StartTimerRequest {
+  todayGoal: string;
+  tasks: string[];
+}
+
+export interface UpdateTimerRequest {
+  splitTimes: { date: string; timeSpent: number }[];
+}
+
+export interface StopTimerRequest {
+  splitTimes: { date: string; timeSpent: number }[];
+  review: string;
+  tasks: { content: string; isCompleted: boolean }[];
+}
+
+export interface UpdateStudyLogRequest {
+  tasks: { content: string; isCompleted: boolean }[];
+}
