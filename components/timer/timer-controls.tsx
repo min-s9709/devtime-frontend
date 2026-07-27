@@ -1,6 +1,5 @@
 "use client";
 
-import { deleteTimer, updateTimer } from "@/apis/timers";
 import FinishIcon from "@/assets/icons/finish.svg";
 import PauseIcon from "@/assets/icons/pause.svg";
 import ResetIcon from "@/assets/icons/reset.svg";
@@ -11,54 +10,23 @@ import ControlButton from "@/components/timer/control-button";
 import GoalSetupModal from "@/components/timer/session/goal-setup-modal";
 import SessionReviewModal from "@/components/timer/session/session-review-modal";
 import TodoChecklistModal from "@/components/timer/session/todo-checklist-modal";
+import { useDeleteTimer } from "@/hooks/queries/use-delete-timer";
+import { useSyncTimer } from "@/hooks/queries/use-sync-timer";
 import { useModalStore } from "@/store/use-modal-store";
 import { useSessionStore } from "@/store/use-session-store";
 import { useTimerStore } from "@/store/use-timer-store";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function TimerControls() {
   const open = useModalStore((state) => state.open);
-
   const setPhase = useSessionStore((state) => state.setPhase);
-  const resetSession = useSessionStore((state) => state.reset);
 
   const status = useTimerStore((state) => state.status);
   const timerId = useTimerStore((state) => state.timerId);
   const pause = useTimerStore((state) => state.pause);
   const resume = useTimerStore((state) => state.resume);
-  const resetTimer = useTimerStore((state) => state.reset);
 
-  const queryClient = useQueryClient();
-
-  // 일시정지 시 현재까지의 일자별 경과를 서버에 동기화한다(PUT /api/timers/{timerId}).
-  const { mutate: syncSplitsToServer } = useMutation({
-    mutationFn: (id: string) =>
-      updateTimer(id, {
-        splitTimes: useTimerStore.getState().getSplitTimesSnapshot(),
-      }),
-    onError: (error) => {
-      // 동기화 실패해도 로컬 일시정지는 유지된다(다음 일시정지/종료 때 재반영).
-      console.error("타이머 동기화 실패:", error);
-    },
-  });
-
-  // 타이머 초기화: 서버의 타이머를 삭제한다(DELETE /api/timers/{timerId}).
-  const { mutate: removeTimer, isPending: isResetting } = useMutation({
-    mutationFn: (id: string) => deleteTimer(id),
-    // 서버에서 지워진 뒤에만 로컬을 비운다. 먼저 비우면 삭제 실패 시
-    // 서버에는 타이머가 남아 다음 진입에서 되살아난다.
-    onSuccess: () => {
-      resetTimer();
-      resetSession();
-      useTimerStore.persist.clearStorage();
-      useSessionStore.persist.clearStorage();
-      // 삭제된 타이머가 부트스트랩에서 다시 복구되지 않도록 캐시 제거.
-      queryClient.removeQueries({ queryKey: ["timer"] });
-    },
-    onError: (error) => {
-      console.error("타이머 초기화 실패:", error);
-    },
-  });
+  const { syncTimer } = useSyncTimer();
+  const { deleteTimer, isPending: isResetting } = useDeleteTimer();
 
   // idle: 새 세션 시작(모달) / paused: 복구·일시정지된 세션 재개
   const handleStartClick = () => {
@@ -72,7 +40,7 @@ export default function TimerControls() {
   const handlePauseClick = () => {
     pause();
     // pause()가 진행 구간을 splits에 커밋한 직후의 일자별 경과를 서버에 반영한다.
-    if (timerId) syncSplitsToServer(timerId);
+    if (timerId) syncTimer(timerId);
   };
 
   const handleFinishClick = () => {
@@ -92,7 +60,7 @@ export default function TimerControls() {
         }
         confirmText="초기화하기"
         cancelText="취소"
-        onConfirm={() => removeTimer(timerId)}
+        onConfirm={() => deleteTimer(timerId)}
       />,
     );
   };

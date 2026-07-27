@@ -1,12 +1,10 @@
 "use client";
 
-import { getStudyLog } from "@/apis/study-logs";
-import { getTimer } from "@/apis/timers";
+import { useActiveTimer } from "@/hooks/queries/use-active-timer";
+import { useStudyLog } from "@/hooks/queries/use-study-log";
 import { useTimerHeartbeat } from "@/hooks/use-timer-heartbeat";
-import { useAuthStore } from "@/store/use-auth-store";
 import { useSessionStore } from "@/store/use-session-store";
 import { useTimerStore } from "@/store/use-timer-store";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
 // 타이머 페이지에 머무는 동안 상시 마운트되는(화면엔 안 보이는) 컴포넌트로,
@@ -22,8 +20,6 @@ import { useEffect, useRef } from "react";
 //
 // 2) 폴링(heartbeat) — useTimerHeartbeat로 running 중 10분마다 서버에 경과를 동기화.
 export default function TimerBootstrap() {
-  const accessToken = useAuthStore((s) => s.accessToken);
-
   // running 중 10분마다 서버로 경과를 동기화한다(status 기반 자동 시작/정지).
   useTimerHeartbeat();
 
@@ -41,28 +37,8 @@ export default function TimerBootstrap() {
     hadLocalSession.current = useTimerStore.getState().status !== "idle";
   }, []);
 
-  const { data: timer } = useQuery({
-    queryKey: ["timer"],
-    queryFn: getTimer,
-    enabled: !!accessToken, // silent refresh로 토큰이 채워진 뒤에만 조회
-    retry: false,
-    // 진입 시 1회만 복구하는 부트스트랩. 이후 refetch가 로컬 시계 상태
-    // (start/pause 등)를 덮어쓰지 않도록 재요청을 끈다.
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
-
-  const studyLogId = timer?.studyLogId;
-
-  const { data: studyLog } = useQuery({
-    queryKey: ["study-log", studyLogId],
-    queryFn: () => getStudyLog(studyLogId!),
-    enabled: !!studyLogId, // 미종료 타이머가 있을 때만 조회
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
+  const { timer } = useActiveTimer();
+  const { studyLog } = useStudyLog(timer?.studyLogId);
 
   useEffect(() => {
     if (timer && !hadLocalSession.current) {

@@ -1,16 +1,15 @@
 "use client";
 
-import { stopTimer } from "@/apis/timers";
 import Button from "@/components/common/button";
 import HelperText from "@/components/common/helper-text";
 import TextAreaField from "@/components/common/textarea-field";
 import TodoInput from "@/components/timer/todo/todo-input";
 import TodoList from "@/components/timer/todo/todo-list";
+import { useStopTimer } from "@/hooks/queries/use-stop-timer";
 import { useModalStore } from "@/store/use-modal-store";
 import { useSessionStore } from "@/store/use-session-store";
 import { useTimerStore } from "@/store/use-timer-store";
 import type { StopTimerRequest } from "@/types/request";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const MIN_REVIEW_LENGTH = 15; // 학습 회고 최소 글자 수
 const MAX_REVIEW_LENGTH = 500; // 학습 회고 최대 글자 수
@@ -26,34 +25,18 @@ export default function SessionReviewModal() {
 
   const timerId = useTimerStore((s) => s.timerId);
   const close = useModalStore((s) => s.close);
-  const queryClient = useQueryClient();
+  const { stopTimer, isPending } = useStopTimer();
 
-  const { mutate: finishSession, isPending } = useMutation({
-    mutationFn: () => {
-      if (!timerId) throw new Error("종료할 타이머가 없습니다.");
-
-      const payload: StopTimerRequest = {
-        // 종료 직전 pause()로 진행 구간이 커밋된 일자별 경과를 그대로 보낸다.
-        splitTimes: useTimerStore.getState().getSplitTimesSnapshot(),
-        review: reflection.trim(),
-        tasks: todos.map((t) => ({
-          content: t.content,
-          isCompleted: t.done,
-        })),
-      };
-      return stopTimer(timerId, payload);
-    },
-    onSuccess: () => {
-      // 세션 확정 완료 → 로컬 시계·세션·저장분을 모두 비운다(로그아웃 정리와 동일 패턴).
-      useTimerStore.getState().reset();
-      useSessionStore.getState().reset();
-      useTimerStore.persist.clearStorage();
-      useSessionStore.persist.clearStorage();
-      // 종료된 타이머가 부트스트랩에서 다시 복구되지 않도록 캐시 제거.
-      queryClient.removeQueries({ queryKey: ["timer"] });
-      close();
-    },
-  });
+  // 세션 정리·캐시 제거는 훅이 담당하고, 모달 닫기만 호출부에서 처리한다.
+  const handleFinish = () => {
+    const payload: StopTimerRequest = {
+      // 종료 직전 pause()로 진행 구간이 커밋된 일자별 경과를 그대로 보낸다.
+      splitTimes: useTimerStore.getState().getSplitTimesSnapshot(),
+      review: reflection.trim(),
+      tasks: todos.map((t) => ({ content: t.content, isCompleted: t.done })),
+    };
+    stopTimer(payload, { onSuccess: close });
+  };
 
   // 종료를 취소하면 진행 중이던(일시정지된) 세션으로 돌아간다.
   const handleCancel = () => {
@@ -114,7 +97,7 @@ export default function SessionReviewModal() {
         <Button
           variant="Secondary"
           value="공부 완료하기"
-          onClick={() => finishSession()}
+          onClick={handleFinish}
           disabled={!isReviewValid || !timerId || isPending}
         />
       </section>

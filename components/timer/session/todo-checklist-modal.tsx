@@ -1,14 +1,13 @@
 "use client";
 
-import { updateStudyLog } from "@/apis/study-logs";
 import EditIcon from "@/assets/icons/edit.svg";
 import Button from "@/components/common/button";
 import TodoInput from "@/components/timer/todo/todo-input";
 import TodoList from "@/components/timer/todo/todo-list";
+import { useUpdateStudyLog } from "@/hooks/queries/use-update-study-log";
 import { useModalStore } from "@/store/use-modal-store";
 import { useSessionStore } from "@/store/use-session-store";
 import { useTimerStore } from "@/store/use-timer-store";
-import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 
 // running 국면: 타이머 진행 중 할 일 체크
@@ -27,21 +26,7 @@ export default function TodoChecklistModal() {
   const studyLogId = useTimerStore((s) => s.studyLogId);
   const close = useModalStore((s) => s.close);
 
-  // 할 일 목록을 서버에 저장한다(PUT /api/study-logs/{studyLogId}/tasks).
-  const { mutate: saveTasks, isPending } = useMutation({
-    mutationFn: () => {
-      if (!studyLogId) throw new Error("저장할 학습 로그가 없습니다.");
-      return updateStudyLog(studyLogId, {
-        tasks: todos.map((t) => ({
-          content: t.content,
-          isCompleted: t.done,
-        })),
-      });
-    },
-    onError: (error) => {
-      console.error("할 일 목록 저장 실패:", error);
-    },
-  });
+  const { updateStudyLog, isPending } = useUpdateStudyLog();
 
   const handleEditClick = () => {
     setIsEdit((prev) => {
@@ -58,7 +43,9 @@ export default function TodoChecklistModal() {
       setIsEdit(false);
       return;
     }
-    saveTasks();
+    updateStudyLog(
+      todos.map((t) => ({ content: t.content, isCompleted: t.done })),
+    );
   };
 
   // 수정 모드에선 setup처럼 adding/editing 카드로 렌더한다.
