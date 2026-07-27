@@ -11,10 +11,15 @@ export const dayKey = (ms: number): string => {
 };
 
 // dayKey → 서버로 보낼 date 마커(ISO 문자열).
-// 로컬 날짜를 date부에 그대로 담은 UTC 자정으로 보낸다("2026-07-24T00:00:00.000Z").
-// → 서버/분석이 date부를 slice해도 올바른 날이 읽히고, KST(+9) 등 양수 오프셋
-//   타임존에선 dayKey(dateMarker(k)) === k 로 왕복도 보존된다.
-export const dateMarker = (key: string): string => `${key}T00:00:00.000Z`;
+// 날짜부는 버킷 날짜로 두되 시간부는 "현재 시각"으로 채운다. 자정(00:00:00.000Z)은
+// 타이머 시작 시각보다 이전이라 서버 검증(시작~현재 범위)에 걸릴 수 있어서다.
+// dayKey는 로컬 날짜 컴포넌트로 판정하므로 dayKey(dateMarker(k)) === k 왕복은 유지된다.
+export const dateMarker = (key: string): string => {
+  const [y, m, d] = key.split("-").map(Number);
+  const dt = new Date(); // 현재 시각(시:분:초 유지)
+  dt.setFullYear(y, m - 1, d); // 날짜부만 버킷 날짜로 교체(로컬 기준)
+  return dt.toISOString();
+};
 
 // [startMs, endMs) 구간을 로컬 자정 경계로 잘라 buckets(일자별 ms)에 더한다.
 // 자정을 넘긴 구간도 정확히 두 날짜로 분배된다.
