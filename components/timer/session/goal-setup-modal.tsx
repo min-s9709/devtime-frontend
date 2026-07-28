@@ -26,7 +26,7 @@ export default function GoalSetupModal() {
   // 시계 전환(running)은 훅이 담당하고, 모달 닫기만 호출부에서 처리한다.
   const handleStart = () =>
     startTimer(
-      { todayGoal: goal, tasks: todos.map((t) => t.content) },
+      { todayGoal: goal.trim(), tasks: todos.map((t) => t.content) },
       { onSuccess: close },
     );
 
@@ -58,7 +58,12 @@ export default function GoalSetupModal() {
         className="h-110 overflow-y-auto"
       />
       <section className="flex justify-end gap-4">
-        <Button variant="Tertiary" value="취소" onClick={close} />
+        <Button
+          variant="Tertiary"
+          value="취소"
+          onClick={close}
+          disabled={isPending}
+        />
         <Button
           variant="Secondary"
           value="타이머 시작하기"
