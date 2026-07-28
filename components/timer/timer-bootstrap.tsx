@@ -31,10 +31,21 @@ export default function TimerBootstrap() {
   // skipHydration으로 꺼 둔 persist를 클라이언트 마운트 후 명시적으로 복구한다.
   // (SSR 하이드레이션 불일치 방지)
   useEffect(() => {
-    useTimerStore.persist.rehydrate();
-    useSessionStore.persist.rehydrate();
-    // localStorage는 동기 스토리지라 rehydrate 직후 상태가 반영돼 있다.
-    hadLocalSession.current = useTimerStore.getState().status !== "idle";
+    const rehydrate = async () => {
+      // rehydrate()는 Promise를 반환한다. 지금은 localStorage(동기)라 즉시 반영되지만,
+      // 비동기 스토리지로 바뀌어도 재수화 완료 후에 보정·스냅샷이 실행되도록 await한다.
+      await Promise.all([
+        useTimerStore.persist.rehydrate(),
+        useSessionStore.persist.rehydrate(),
+      ]);
+
+      // 크래시로 running 그대로 복구된 경우 오프라인 구간을 버리고 paused로 정규화한다.
+      // (서버 조회보다 앞서 로컬을 안전화한 뒤 hadLocalSession을 확정)
+      useTimerStore.getState().discardStaleRun();
+      hadLocalSession.current = useTimerStore.getState().status !== "idle";
+    };
+
+    void rehydrate();
   }, []);
 
   const { timer } = useActiveTimer();

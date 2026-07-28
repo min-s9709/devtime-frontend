@@ -33,6 +33,11 @@ interface TimerState {
   resume: () => void;
   reset: () => void;
 
+  // 크래시·강제종료로 pagehide fold가 못 돈 흔적(재수화 시 status가 running).
+  // 신뢰할 수 없는 진행 구간(anchorMs)을 버리고 paused로 정규화한다. splits(확정
+  // 누적)는 보존하므로 마지막 확정 시점은 유지되고, 오프라인 구간만 폐기된다.
+  discardStaleRun: () => void;
+
   // 화면 표시용 총 경과 시간(ms). tick으로 누적하지 않고 항상 시각차로 파생한다.
   getElapsedMs: () => number;
 
@@ -93,6 +98,15 @@ export const useTimerStore = create<TimerState>()(
         ),
 
       reset: () => set(initialState),
+
+      // running으로 재수화된 상태 전체를 정규화한다. anchorMs가 null인 비정상
+      // 저장값도 함께 안전하게 paused로 복구된다.
+      discardStaleRun: () =>
+        set((state) =>
+          state.status === "running"
+            ? { status: "paused", anchorMs: null }
+            : state,
+        ),
 
       getElapsedMs: () => {
         const { splits, status, anchorMs } = get();
