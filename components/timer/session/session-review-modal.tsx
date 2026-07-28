@@ -93,7 +93,13 @@ export default function SessionReviewModal() {
         </div>
       </div>
       <section className="flex justify-end gap-4">
-        <Button variant="Tertiary" value="취소" onClick={handleCancel} />
+        <Button
+          variant="Tertiary"
+          value="취소"
+          onClick={handleCancel}
+          // 완료 요청 진행 중 취소하면, 뒤늦게 온 성공 응답이 되돌린 세션까지 지운다.
+          disabled={isPending}
+        />
         <Button
           variant="Secondary"
           value="공부 완료하기"
