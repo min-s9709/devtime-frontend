@@ -1,11 +1,13 @@
 import { logout } from "@/apis/auth";
+import { resetTimerSession } from "@/store/reset-timer-session";
 import { useAuthStore } from "@/store/use-auth-store";
 import { useProfileStore } from "@/store/use-profile-store";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useLogout = () => {
   const setAuth = useAuthStore((state) => state.setAuth);
   const clearProfile = useProfileStore((state) => state.clearProfile);
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: async () => {
@@ -19,6 +21,14 @@ export const useLogout = () => {
         isDuplicateLogin: false,
       });
       clearProfile();
+
+      // 타이머/세션 상태와 localStorage 저장분까지 비워 다음 사용자에게
+      // 이전 타이머가 복구되지 않도록 한다.
+      resetTimerSession();
+
+      // 쿼리 캐시도 비운다. timer/study-log는 staleTime이 Infinity라
+      // 남겨두면 재로그인 시 이전 사용자의 캐시가 그대로 쓰인다.
+      queryClient.clear();
     },
     onError: (error) => {
       console.error("Logout failed:", error);

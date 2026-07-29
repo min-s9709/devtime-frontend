@@ -13,6 +13,7 @@ const themeVariants = {
   informative: `${base} text-primary`,
   error: `${base} text-negative`,
   success: `${base} text-positive`,
+  neutral: `${base} text-gray-400`,
 };
 
 export default function HelperText({

@@ -19,6 +19,7 @@ export default function TodoInput({
   onAdd,
   className,
   id: idProp,
+  maxLength = 30, // 할 일 항목은 최대 30자
   ...props
 }: TodoInputProps) {
   const generatedId = useId();
@@ -46,6 +47,7 @@ export default function TodoInput({
             id={id}
             placeholder={placeholder}
             value={value}
+            maxLength={maxLength}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => {
               // IME 조합 중 Enter(한글 확정)는 무시해 중복 추가 방지

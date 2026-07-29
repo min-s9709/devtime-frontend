@@ -8,6 +8,7 @@ export interface BaseResponse {
 export type SignupResponse = BaseResponse;
 export type LogoutResponse = BaseResponse;
 export type CreateProfileResponse = BaseResponse;
+export type UpdateStudyLogResponse = BaseResponse;
 
 export interface CheckDuplicateResponse extends BaseResponse {
   available: boolean;
@@ -67,4 +68,45 @@ export interface TechStacksResponse {
 export interface CreateTechStackResponse {
   message: string;
   techStack: TechStack;
+}
+
+export interface GetTimerResponse {
+  timerId: string;
+  studyLogId: string;
+  splitTimes: { date: string; timeSpent: number }[];
+  startTime: string;
+  lastUpdateTime: string;
+}
+
+export interface GetStudyLogsResponse {
+  success: boolean;
+  data: {
+    id: string;
+    date: string;
+    todayGoal: string;
+    studyTime: number;
+    tasks: { id: string; content: string; isCompleted: boolean }[];
+    review: string;
+    completionRate: number;
+  };
+}
+
+export interface StartTimerResponse {
+  message: string;
+  studyLogId: string;
+  timerId: string;
+  startTime: string; // ex) "2026-07-22T05:28:04.187Z"
+}
+
+export interface UpdateTimerResponse {
+  message: string;
+  startTime: string;
+  splitTimes: { date: string; timeSpent: number }[];
+  lastUpdateTime: string;
+}
+
+export interface StopTimerResponse {
+  message: string;
+  totalTime: number;
+  endTime: string;
 }

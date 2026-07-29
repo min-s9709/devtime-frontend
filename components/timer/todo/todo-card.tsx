@@ -59,6 +59,7 @@ export default function TodoCard({
         <input
           autoFocus
           value={value}
+          maxLength={30} // 할 일 항목은 최대 30자
           onChange={(e) => onChange?.(e.target.value)}
           onKeyDown={(e) => {
             // IME 조합 중 Enter(한글 확정)는 무시
