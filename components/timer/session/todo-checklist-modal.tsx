@@ -23,7 +23,7 @@ export default function TodoChecklistModal() {
   const editContent = useSessionStore((s) => s.editContent);
   const stopEditing = useSessionStore((s) => s.stopEditing);
   const deleteTodo = useSessionStore((s) => s.deleteTodo);
-  const studyLogId = useTimerStore((s) => s.studyLogId);
+  const timerId = useTimerStore((s) => s.timerId);
   const close = useModalStore((s) => s.close);
 
   const { updateStudyLog, isPending } = useUpdateStudyLog();
@@ -90,7 +90,7 @@ export default function TodoChecklistModal() {
           variant="Secondary"
           value={isEdit ? "변경사항 저장하기" : "저장하기"}
           onClick={handleSaveClick}
-          disabled={(!isEdit && !studyLogId) || isPending}
+          disabled={(!isEdit && !timerId) || isPending}
         />
       </section>
     </form>

@@ -1,7 +1,6 @@
 import type { GetTimerResponse, StartTimerResponse } from "@/types/response";
 import {
   arrayToSplits,
-  dayKey,
   foldSegment,
   splitsToArray,
   sumSplits,
@@ -14,8 +13,8 @@ export type TimerStatus = "idle" | "running" | "paused";
 
 interface TimerState {
   status: TimerStatus;
+  // 세션 식별자. 타이머·학습기록(study-log) 엔드포인트 모두 이 하나로 통일한다.
   timerId: string | null;
-  studyLogId: string | null;
   // 일자별 확정 누적 경과(ms). key는 로컬 날짜("YYYY-MM-DD").
   // 이미 끝난(=일시정지로 접힌) 구간들의 일자별 합이다. 진행 중 구간은 미포함.
   splits: Record<string, number>;
@@ -27,8 +26,8 @@ interface TimerState {
   // paused로 랜딩해 사용자가 재개하게 한다.
   hydrateFromServer: (res: GetTimerResponse) => void;
 
-  // 새 세션 시작(0부터). POST /api/timers 응답의 서버 신원을 함께 저장한다.
-  start: (init: Pick<StartTimerResponse, "timerId" | "studyLogId">) => void;
+  // 새 세션 시작(0부터). POST /api/timers 응답의 서버 신원(timerId)을 저장한다.
+  start: (init: Pick<StartTimerResponse, "timerId">) => void;
   pause: () => void;
   resume: () => void;
   reset: () => void;
@@ -49,7 +48,6 @@ interface TimerState {
 const initialState = {
   status: "idle" as TimerStatus,
   timerId: null,
-  studyLogId: null,
   splits: {} as Record<string, number>,
   anchorMs: null,
 };
@@ -66,18 +64,16 @@ export const useTimerStore = create<TimerState>()(
         set({
           status: "paused",
           timerId: res.timerId,
-          studyLogId: res.studyLogId,
           splits: arrayToSplits(res.splitTimes),
           anchorMs: null,
         }),
 
-      start: ({ timerId, studyLogId }) =>
+      start: ({ timerId }) =>
         set({
           status: "running",
           splits: {},
           anchorMs: Date.now(),
           timerId,
-          studyLogId,
         }),
 
       pause: () =>
@@ -127,26 +123,24 @@ export const useTimerStore = create<TimerState>()(
     }),
     {
       name: "devtime-timer",
-      version: 1, // baseMs(총합) → splits(일자별)로 shape 변경
+      // v1: baseMs(총합) → splits(일자별)로 shape 변경
+      // v2: studyLogId가 goalId → timerId(세션 id)로 의미 변경(백엔드).
+      //     예전 persist에 남은 세션 신원(옛 goalId)을 신뢰할 수 없어 저장분을 폐기.
+      version: 2,
       skipHydration: true,
       // 시계 상태만 저장한다(액션 제외).
       partialize: (s) => ({
         status: s.status,
         timerId: s.timerId,
-        studyLogId: s.studyLogId,
         splits: s.splits,
         anchorMs: s.anchorMs,
       }),
-      // 이전 버전(v0)의 baseMs를 오늘 날짜 단일 버킷으로 옮긴다.
       migrate: (persisted, version) => {
-        if (version === 0 && persisted && typeof persisted === "object") {
-          const { baseMs, ...rest } = persisted as { baseMs?: number } & Record<
-            string,
-            unknown
-          >;
-          const splits = baseMs ? { [dayKey(Date.now())]: baseMs } : {};
-          return { ...rest, splits } as TimerState;
-        }
+        // v2 미만: 옛 studyLogId/timerId(=goalId 시절)를 재사용하면 404가 나므로
+        // persist 저장분을 통째로 버리고 초기 상태로 되돌린다. 미종료 타이머는
+        // 접속 시 GET /api/timers → hydrateFromServer가 새 값으로 다시 복구한다.
+        if (version < 2) return { ...initialState } as unknown as TimerState;
+
         return persisted as TimerState;
       },
     },

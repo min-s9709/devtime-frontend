@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from "react";
 //      서버는 폴링(10분)·일시정지·종료 시점에만 갱신돼 최대 10분 뒤처질 수 있으므로,
 //      로컬 세션이 살아있으면 가장 최신인 로컬을 우선한다.
 //    - 서버(GET /api/timers): 다른 기기/최초 로그인처럼 로컬에 세션이 없을 때만 사용.
-//      있으면 studyLogId로 GET /api/study-logs/{id}까지 받아 세션 내용을 채운다.
+//      있으면 timerId로 GET /api/study-logs/{id}까지 받아 세션 내용을 채운다.
 //    둘 다 없으면 두 스토어 모두 초기(idle)로 남아 타이머 페이지는 초기 상태로 랜딩.
 //
 // 2) 폴링(heartbeat) — useTimerHeartbeat로 running 중 10분마다 서버에 경과를 동기화.
@@ -57,7 +57,8 @@ export default function TimerBootstrap() {
   }, []);
 
   const { timer } = useActiveTimer();
-  const { studyLog } = useStudyLog(timer?.studyLogId);
+  // 세션 식별자는 timerId로 통일(studyLogId == timerId). study-log 조회도 timerId로.
+  const { studyLog } = useStudyLog(timer?.timerId);
 
   useEffect(() => {
     // 복원 완료(isRehydrated) 전에는 실행하지 않는다. cache hit으로 timer가 일찍 와도,

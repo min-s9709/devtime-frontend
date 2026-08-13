@@ -28,7 +28,7 @@ interface SessionState {
   deleteTodo: (id: string) => void;
   toggleTodo: (id: string) => void;
   setReflection: (reflection: string) => void;
-  // 미종료 세션 복구: GET /api/study-logs/{studyLogId} 결과로 세션 내용을 채운다.
+  // 미종료 세션 복구: GET /api/study-logs/{id}(id=timerId) 결과로 세션 내용을 채운다.
   hydrateFromStudyLog: (data: GetStudyLogsResponse["data"]) => void;
   reset: () => void;
 }
