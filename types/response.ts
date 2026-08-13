@@ -70,9 +70,10 @@ export interface CreateTechStackResponse {
   techStack: TechStack;
 }
 
+// 세션 식별자는 timerId 하나로 통일한다. 서버는 timerId와 동일한 studyLogId도
+// 내려주지만(중복 필드) 프론트에선 timerId만 사용한다.
 export interface GetTimerResponse {
   timerId: string;
-  studyLogId: string;
   splitTimes: { date: string; timeSpent: number }[];
   startTime: string;
   lastUpdateTime: string;
@@ -93,8 +94,7 @@ export interface GetStudyLogsResponse {
 
 export interface StartTimerResponse {
   message: string;
-  studyLogId: string;
-  timerId: string;
+  timerId: string; // 세션 식별자. 서버가 주는 studyLogId와 동일하며 프론트는 이것만 쓴다.
   startTime: string; // ex) "2026-07-22T05:28:04.187Z"
 }
 
@@ -109,4 +109,56 @@ export interface StopTimerResponse {
   message: string;
   totalTime: number;
   endTime: string;
+}
+
+export interface GetStudyStatsResponse {
+  consecutiveDays: number;
+  totalStudyTime: number;
+  averageDailyStudyTime: number;
+  taskCompletionRate: number;
+  weekdayStudyTime: {
+    Monday: number;
+    Tuesday: number;
+    Wednesday: number;
+    Thursday: number;
+    Friday: number;
+    Saturday: number;
+    Sunday: number;
+  };
+}
+
+export interface GetStudyHeatmapResponse {
+  heatmap: {
+    date: string;
+    studyTimeHours: number;
+    colorLevel: number;
+  }[];
+}
+
+// 목록 조회용 학습 로그 요약 항목. (상세 조회 GetStudyLogsResponse.data와 달리 tasks 배열 대신 집계값을 준다)
+export interface StudyLogSummary {
+  id: string;
+  startDate: string; // ex) "2026-08-04"
+  endDate: string;
+  todayGoal: string;
+  studyTime: number;
+  totalTasks: number;
+  incompleteTasks: number;
+  completionRate: number;
+}
+
+export interface Pagination {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+export interface GetAllStudyLogsResponse {
+  success: boolean;
+  data: {
+    studyLogs: StudyLogSummary[];
+    pagination: Pagination;
+  };
 }

@@ -8,4 +8,6 @@ export const ENDPOINTS = {
   TECH_STACKS: "tech-stacks",
   TIMERS: "timers",
   STUDY_LOGS: "study-logs",
+  STUDY_STATS: "stats",
+  STUDY_HEATMAP: "heatmap",
 } as const;

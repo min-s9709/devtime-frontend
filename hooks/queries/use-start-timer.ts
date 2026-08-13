@@ -7,7 +7,7 @@ import type { StartTimerRequest } from "@/types/request";
 import { useMutation } from "@tanstack/react-query";
 import { createElement } from "react";
 
-// 새 타이머 시작(POST /api/timers). 성공 시에만 응답의 서버 신원(timerId/studyLogId)을
+// 새 타이머 시작(POST /api/timers). 성공 시에만 응답의 서버 신원(timerId)을
 // 시계에 주입하고 running으로 전환한다. 모달 닫기 등 UI는 호출부 onSuccess로.
 export const useStartTimer = () => {
   const start = useTimerStore((s) => s.start);
@@ -16,8 +16,8 @@ export const useStartTimer = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: StartTimerRequest) => startTimer(data),
-    onSuccess: ({ timerId, studyLogId }) => {
-      start({ timerId, studyLogId });
+    onSuccess: ({ timerId }) => {
+      start({ timerId });
       setPhase("running");
     },
     onError: () => {
