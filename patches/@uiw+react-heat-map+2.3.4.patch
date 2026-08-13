@@ -1,0 +1,24 @@
+diff --git a/node_modules/@uiw/react-heat-map/esm/Rect.js b/node_modules/@uiw/react-heat-map/esm/Rect.js
+index 7d63a9c..e5aefa7 100644
+--- a/node_modules/@uiw/react-heat-map/esm/Rect.js
++++ b/node_modules/@uiw/react-heat-map/esm/Rect.js
+@@ -11,7 +11,6 @@ export var Rect = props => {
+   var style = props.style,
+     value = props.value,
+     render = props.render,
+-    key = props.key,
+     reset = _objectWithoutPropertiesLoose(props, _excluded);
+   var rectProps = _extends({}, reset, {
+     style: _extends({
+diff --git a/node_modules/@uiw/react-heat-map/lib/Rect.js b/node_modules/@uiw/react-heat-map/lib/Rect.js
+index e373a10..36379fc 100644
+--- a/node_modules/@uiw/react-heat-map/lib/Rect.js
++++ b/node_modules/@uiw/react-heat-map/lib/Rect.js
+@@ -18,7 +18,6 @@ var Rect = exports.Rect = function Rect(props) {
+   var style = props.style,
+     value = props.value,
+     render = props.render,
+-    key = props.key,
+     reset = (0, _objectWithoutProperties2["default"])(props, _excluded);
+   var rectProps = (0, _objectSpread2["default"])((0, _objectSpread2["default"])({}, reset), {}, {
+     style: (0, _objectSpread2["default"])({

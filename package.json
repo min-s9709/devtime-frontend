@@ -8,12 +8,14 @@
     "start": "next start",
     "lint": "eslint",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@fontsource/dseg7-classic": "^5.2.5",
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.90.20",
+    "@uiw/react-heat-map": "^2.3.4",
     "clsx": "^2.1.1",
     "ky": "^1.14.3",
     "motion": "^12.35.2",
@@ -44,6 +46,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "eslint-plugin-storybook": "^10.2.10",
+    "patch-package": "^8.0.1",
     "playwright": "^1.58.2",
     "storybook": "^10.2.10",
     "tailwindcss": "^4",
