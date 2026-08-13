@@ -9,10 +9,10 @@ import { useStudyStats } from "@/hooks/queries/use-study-stats";
 import { durationSegments } from "@/utils/format-time";
 
 export default function Dashboard() {
-  const { stats, isLoading, isError } = useStudyStats();
+  const { stats, isPending, isError } = useStudyStats();
   const { heatmap } = useStudyHeatmap();
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="flex h-full w-full items-center justify-center text-body text-gray-500">
         통계를 불러오는 중...

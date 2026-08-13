@@ -8,7 +8,7 @@ export const useAllStudyLogs = (page: number, size = 10) => {
   const accessToken = useAuthStore((s) => s.accessToken);
 
   const { data, isLoading, isError, isPlaceholderData } = useQuery({
-    queryKey: studyLogKeys.list(page),
+    queryKey: studyLogKeys.list(page, size),
     queryFn: () => getAllStudyLogs(page, size),
     enabled: !!accessToken, // silent refresh로 토큰이 채워진 뒤에만 조회
     // 페이지 이동 시 이전 페이지 데이터를 유지해 표가 깜빡이지 않게 한다.

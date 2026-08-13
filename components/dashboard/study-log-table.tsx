@@ -29,6 +29,14 @@ export default function StudyLogTable() {
   const { deleteStudyLog } = useDeleteStudyLog();
   const open = useModalStore((s) => s.open);
 
+  // 마지막 페이지의 마지막 기록을 삭제하면 totalPages가 줄어 page가 범위를 벗어날 수 있다.
+  // 그 경우 빈 목록 + 활성 없는 페이지네이션이 뜨므로, 유효 마지막 페이지로 보정한다.
+  // (effect 대신 렌더 중 보정 — React 권장 패턴. 조건이 만족될 때만 즉시 재렌더된다.)
+  // 기록이 0건이면 totalPages가 0이라 보정하지 않고 1페이지 빈 상태를 유지한다.
+  if (pagination && pagination.totalPages >= 1 && page > pagination.totalPages) {
+    setPage(pagination.totalPages);
+  }
+
   const openDetail = (log: StudyLogSummary) =>
     open(<RecordDetailModal studyLogId={log.id} />);
 
@@ -78,8 +86,18 @@ export default function StudyLogTable() {
                   <td className="rounded-l-xl px-4 py-5 whitespace-nowrap text-gray-500">
                     {formatDateRange(log.startDate, log.endDate)}
                   </td>
-                  <td className="px-4 py-5 font-medium text-gray-800">
-                    {log.todayGoal}
+                  <td className="px-4 py-5">
+                    {/* 키보드 접근용 실제 버튼. 행 onClick(마우스)은 그대로 유지. */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation(); // 행 onClick과 중복 실행 방지
+                        openDetail(log);
+                      }}
+                      className="text-left font-medium text-gray-800 hover:underline focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    >
+                      {log.todayGoal}
+                    </button>
                   </td>
                   <td className="px-4 py-5 whitespace-nowrap text-gray-600">
                     {formatCompactDuration(Math.floor(log.studyTime / 1000))}

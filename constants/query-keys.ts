@@ -11,6 +11,7 @@ export const statsKeys = {
 
 export const studyLogKeys = {
   all: ["study-logs"] as const,
-  list: (page: number) => ["study-logs", "list", page] as const, // GET /api/study-logs (목록)
+  list: (page: number, size: number) =>
+    ["study-logs", "list", page, size] as const, // GET /api/study-logs (목록)
   detail: (studyLogId: string) => ["study-logs", "detail", studyLogId] as const, // GET /api/study-logs/{id}
 };

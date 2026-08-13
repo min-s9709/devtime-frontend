@@ -1,6 +1,6 @@
 import { deleteStudyLog } from "@/apis/study-logs";
 import AlertModal from "@/components/common/modal/alert-modal";
-import { studyLogKeys } from "@/constants/query-keys";
+import { statsKeys, studyLogKeys } from "@/constants/query-keys";
 import { useModalStore } from "@/store/use-modal-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createElement } from "react";
@@ -13,8 +13,11 @@ export const useDeleteStudyLog = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: (studyLogId: string) => deleteStudyLog(studyLogId),
     onSuccess: () => {
-      // 삭제 후 페이지/개수가 바뀔 수 있어 목록 전체를 무효화한다.
+      // 삭제는 목록뿐 아니라 통계·히트맵 집계도 바꾸므로 셋 다 무효화해
+      // 대시보드가 옛 값을 보이지 않게 한다.
       queryClient.invalidateQueries({ queryKey: studyLogKeys.all });
+      queryClient.invalidateQueries({ queryKey: statsKeys.study });
+      queryClient.invalidateQueries({ queryKey: statsKeys.heatmap });
     },
     onError: () => {
       open(

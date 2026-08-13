@@ -7,12 +7,13 @@ import { useQuery } from "@tanstack/react-query";
 export const useStudyStats = () => {
   const accessToken = useAuthStore((s) => s.accessToken);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isPending, isError } = useQuery({
     queryKey: statsKeys.study,
     queryFn: getStudyStats,
     enabled: !!accessToken, // silent refresh로 토큰이 채워진 뒤에만 조회
     staleTime: 5 * 60 * 1000,
   });
 
-  return { stats: data, isLoading, isError };
+  // enabled:false(토큰 대기) 구간을 로딩으로 덮으려면 isLoading이 아니라 isPending을 노출한다.
+  return { stats: data, isPending, isError };
 };
