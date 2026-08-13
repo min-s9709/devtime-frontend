@@ -110,3 +110,55 @@ export interface StopTimerResponse {
   totalTime: number;
   endTime: string;
 }
+
+export interface GetStudyStatsResponse {
+  consecutiveDays: number;
+  totalStudyTime: number;
+  averageDailyStudyTime: number;
+  taskCompletionRate: number;
+  weekdayStudyTime: {
+    Monday: number;
+    Tuesday: number;
+    Wednesday: number;
+    Thursday: number;
+    Friday: number;
+    Saturday: number;
+    Sunday: number;
+  };
+}
+
+export interface GetStudyHeatmapResponse {
+  heatmap: {
+    date: string;
+    studyTimeHours: number;
+    colorLevel: number;
+  }[];
+}
+
+// 목록 조회용 학습 로그 요약 항목. (상세 조회 GetStudyLogsResponse.data와 달리 tasks 배열 대신 집계값을 준다)
+export interface StudyLogSummary {
+  id: string;
+  startDate: string; // ex) "2026-08-04"
+  endDate: string;
+  todayGoal: string;
+  studyTime: number;
+  totalTasks: number;
+  incompleteTasks: number;
+  completionRate: number;
+}
+
+export interface Pagination {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+export interface GetAllStudyLogsResponse {
+  success: boolean;
+  data: {
+    studyLogs: StudyLogSummary[];
+    pagination: Pagination;
+  };
+}
