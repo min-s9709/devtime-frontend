@@ -4,7 +4,7 @@ import Button from "@/components/common/button";
 import { useModalStore } from "@/store/use-modal-store";
 
 interface ConfirmModalProps {
-  title: string;
+  title?: string;
   description?: string;
   confirmText?: string;
   cancelText?: string;
