@@ -1,3 +1,9 @@
+import MypageContent from "@/components/mypage/mypage-content";
+
 export default function MyPage() {
-  return <div>마이 페이지</div>;
+  return (
+    <div className="w-full py-10">
+      <MypageContent />
+    </div>
+  );
 }
