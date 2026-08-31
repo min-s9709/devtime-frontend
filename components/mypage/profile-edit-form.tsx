@@ -245,7 +245,12 @@ function EditForm({
   const handleSelect = (item: TechStackItem) => {
     const current = getValues("techStacks");
     if (current.some((v) => v.id === item.id || v.name === item.name)) return;
-    setValue("techStacks", [...current, item], { shouldValidate: true });
+    // setValue는 기본적으로 dirty를 갱신하지 않으므로, 저장 버튼(isDirty)이 반영되도록
+    // shouldDirty를 명시한다. (기술 스택만 변경한 경우에도 저장 가능하게)
+    setValue("techStacks", [...current, item], {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const handleDelete = (id: number) => {
@@ -253,7 +258,7 @@ function EditForm({
     setValue(
       "techStacks",
       current.filter((item) => item.id !== id),
-      { shouldValidate: true },
+      { shouldValidate: true, shouldDirty: true },
     );
   };
 
