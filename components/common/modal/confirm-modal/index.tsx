@@ -4,7 +4,7 @@ import Button from "@/components/common/button";
 import { useModalStore } from "@/store/use-modal-store";
 
 interface ConfirmModalProps {
-  title: string;
+  title?: string;
   description?: string;
   confirmText?: string;
   cancelText?: string;
@@ -35,7 +35,9 @@ export default function ConfirmModal({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h2 className="font-semibold text-gray-800 text-title">{title}</h2>
+        {title && (
+          <h2 className="font-semibold text-gray-800 text-title">{title}</h2>
+        )}
         {description && (
           <p className="text-body text-gray-600 whitespace-pre-line">
             {description}

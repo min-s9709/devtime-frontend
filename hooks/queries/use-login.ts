@@ -5,7 +5,7 @@ import { useAuthStore } from "@/store/use-auth-store";
 import { useModalStore } from "@/store/use-modal-store";
 import { useProfileStore } from "@/store/use-profile-store";
 import { LoginRequest } from "@/types/request";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { HTTPError } from "ky";
 import { useRouter } from "next/navigation";
 import { createElement } from "react";
@@ -13,7 +13,9 @@ import { createElement } from "react";
 export const useLogin = () => {
   const setAuth = useAuthStore((state) => state.setAuth);
   const fetchProfile = useProfileStore((state) => state.fetchProfile);
+  const clearProfile = useProfileStore((state) => state.clearProfile);
   const open = useModalStore((state) => state.open);
+  const queryClient = useQueryClient();
 
   const router = useRouter();
 
@@ -28,6 +30,11 @@ export const useLogin = () => {
     },
     nextPath: string,
   ) => {
+    // 계정 전환(로그아웃 없이 재로그인) 시 이전 계정의 상태가 남지 않도록 먼저 정리한다.
+    // - clearProfile: 최초 로그인(fetchProfile 생략)일 때도 store에 이전 프로필이 남지 않게 한다.
+    // - queryClient.clear: profile 외 stats·timers 등 계정 무관 키 캐시 재사용을 막는다(로그아웃과 대칭).
+    clearProfile();
+    queryClient.clear();
     setAuth(authData);
     if (!authData.isFirstLogin) await fetchProfile();
     router.push(nextPath);

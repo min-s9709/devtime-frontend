@@ -6,13 +6,20 @@ import { startTransition, useEffect, useRef, useState } from "react";
 interface ImageUploadProps {
   value?: File | null;
   onChange?: (file: File | null) => void;
+  // 수정 화면에서 기존에 저장된 이미지 URL. 새 파일을 고르기 전까지 미리보기로 표시한다.
+  initialImageUrl?: string;
 }
 
-// TODO: 이미지 업로드 api 연동 및 presignedURL 적용
-
-export default function ImageUpload({ value, onChange }: ImageUploadProps) {
+export default function ImageUpload({
+  value,
+  onChange,
+  initialImageUrl,
+}: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // 새로 고른 파일이 있으면 그 미리보기를, 없으면 기존 이미지를 보여준다.
+  const displayUrl = previewUrl ?? initialImageUrl ?? null;
 
   useEffect(() => {
     if (!value) {
@@ -61,12 +68,12 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
           aria-describedby="profile-image-help"
           className={cn(
             "relative w-30 h-30 border border-dashed border-primary rounded-lg cursor-pointer overflow-hidden",
-            previewUrl && "border-none",
+            displayUrl && "border-none",
           )}
         >
-          {previewUrl ? (
+          {displayUrl ? (
             <Image
-              src={previewUrl}
+              src={displayUrl}
               alt="프로필 미리보기"
               fill
               className="object-cover"

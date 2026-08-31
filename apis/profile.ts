@@ -1,6 +1,11 @@
 import { ENDPOINTS } from "@/constants/endpoints";
-import { CreateProfileRequest, PresignedUrlRequest } from "@/types/request";
 import {
+  CreateProfileRequest,
+  PresignedUrlRequest,
+  UpdateProfileRequest,
+} from "@/types/request";
+import {
+  BaseResponse,
   CreateProfileResponse,
   PresignedUrlResponse,
   ProfileResponse,
@@ -32,3 +37,6 @@ export const uploadFileToPresignedUrl = async (
 
 export const createProfile = (data: CreateProfileRequest) =>
   httpClient.post<CreateProfileResponse>(ENDPOINTS.PROFILE, data);
+
+export const updateProfile = (data: UpdateProfileRequest) =>
+  httpClient.put<BaseResponse>(ENDPOINTS.PROFILE, data);

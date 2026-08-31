@@ -9,6 +9,10 @@ export const statsKeys = {
   heatmap: ["study-heatmap"] as const, // GET /api/heatmap (요일별 공부량 히트맵)
 };
 
+export const profileKeys = {
+  detail: ["profile"] as const, // GET /api/profile (마이페이지 프로필)
+};
+
 export const studyLogKeys = {
   all: ["study-logs"] as const,
   list: (page: number, size: number) =>

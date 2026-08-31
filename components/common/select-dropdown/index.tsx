@@ -49,6 +49,8 @@ interface RootProps {
 interface SelectDropdownProps extends Omit<RootProps, "children"> {
   options: string[];
   label?: string;
+  // 라벨 옆에 필수 표시(*)를 노출한다.
+  required?: boolean;
 }
 
 function Root({
@@ -151,6 +153,7 @@ function Item({ value }: { value: string }) {
 export default function SelectDropdown({
   label,
   options,
+  required,
   ...props
 }: SelectDropdownProps) {
   return (
@@ -158,6 +161,7 @@ export default function SelectDropdown({
       {label && (
         <label className="text-body-sm font-medium text-gray-600">
           {label}
+          {required && <span className="text-negative"> *</span>}
         </label>
       )}
       <Root {...props}>
