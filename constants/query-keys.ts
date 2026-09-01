@@ -1,3 +1,5 @@
+import { RankingSortBy } from "@/types/request";
+
 // react-query 쿼리 키를 한곳에 모아 오타·드리프트를 막는다.
 export const timerKeys = {
   active: ["timer"] as const, // GET /api/timers (미종료 타이머)
@@ -18,4 +20,10 @@ export const studyLogKeys = {
   list: (page: number, size: number) =>
     ["study-logs", "list", page, size] as const, // GET /api/study-logs (목록)
   detail: (studyLogId: string) => ["study-logs", "detail", studyLogId] as const, // GET /api/study-logs/{id}
+};
+
+export const rankingKeys = {
+  all: ["rankings"] as const,
+  // GET /api/rankings — 정렬 기준마다 별도 무한스크롤 캐시를 갖는다.
+  list: (sortBy: RankingSortBy) => ["rankings", "list", sortBy] as const,
 };

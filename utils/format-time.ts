@@ -59,3 +59,11 @@ export const formatKoreanDuration = (
 
   return parts.join(" ");
 };
+
+// ms 단위 학습 시간을 "420시간" / "4.5시간"처럼 시간 단위로 표기한다. (랭킹 카드용)
+// fractionDigits=0이면 정수 시간, 1이면 소수 한 자리까지 보여준다.
+export const formatStudyHours = (totalMs: number, fractionDigits = 0) => {
+  const hours = Math.max(0, totalMs) / 1000 / 60 / 60;
+
+  return `${hours.toFixed(fractionDigits)}시간`;
+};

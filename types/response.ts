@@ -162,3 +162,29 @@ export interface GetAllStudyLogsResponse {
     pagination: Pagination;
   };
 }
+
+// 랭킹 항목에 포함된 프로필. 전체 프로필(Profile)과 달리 노출용 필드만 내려온다.
+// techStacks도 id/name만 담긴 축약형이다.
+export interface RankingProfile {
+  career: string;
+  purpose: string;
+  profileImage: string;
+  techStacks: Pick<TechStack, "id" | "name">[];
+}
+
+export interface RankingItem {
+  rank: number;
+  userId: string;
+  nickname: string;
+  totalStudyTime: number;
+  averageStudyTime: number;
+  profile: RankingProfile;
+}
+
+export interface GetRankingsResponse {
+  success: boolean;
+  data: {
+    rankings: RankingItem[];
+    pagination: Pagination;
+  };
+}
