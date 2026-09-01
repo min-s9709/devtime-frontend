@@ -4,6 +4,7 @@ import { RankingItem } from "@/types/response";
 import { cn } from "@/utils/cn";
 import { formatStudyHours } from "@/utils/format-time";
 import Image from "next/image";
+import { memo } from "react";
 
 // 기획: 공부 중인 기술 스택은 최대 5개까지만 노출한다.
 const MAX_VISIBLE_TECH_STACKS = 5;
@@ -22,7 +23,7 @@ interface RankingCardProps {
   item: RankingItem;
 }
 
-export default function RankingCard({ item }: RankingCardProps) {
+function RankingCard({ item }: RankingCardProps) {
   const { rank, nickname, totalStudyTime, averageStudyTime, profile } = item;
   const isTopRank = rank <= 3;
   const techStacks = profile.techStacks.slice(0, MAX_VISIBLE_TECH_STACKS);
@@ -81,3 +82,7 @@ export default function RankingCard({ item }: RankingCardProps) {
     </article>
   );
 }
+
+// 다음 페이지를 이어 붙일 때 이미 그려진 카드까지 전부 리렌더되지 않도록 막는다.
+// react-query의 구조적 공유 덕에 기존 페이지의 item 참조가 그대로 유지돼 memo가 먹는다.
+export default memo(RankingCard);

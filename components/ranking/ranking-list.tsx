@@ -37,7 +37,7 @@ export default function RankingList({ sortBy }: RankingListProps) {
     observer.observe(sentinel);
 
     return () => observer.disconnect();
-  }, [hasNextPage, fetchNextPage]);
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage]);
 
   if (isPending) {
     return (
