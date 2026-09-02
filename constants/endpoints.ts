@@ -10,4 +10,5 @@ export const ENDPOINTS = {
   STUDY_LOGS: "study-logs",
   STUDY_STATS: "stats",
   STUDY_HEATMAP: "heatmap",
+  RANKING: "rankings",
 } as const;
