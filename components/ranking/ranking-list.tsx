@@ -22,14 +22,20 @@ export default function RankingList({ sortBy }: RankingListProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   // 목록 바닥의 sentinel이 보이면 다음 페이지를 이어 붙인다.
-  // 이미 요청 중이면 fetchNextPage가 알아서 무시하므로 별도 가드는 두지 않는다.
+  // deps의 isFetchingNextPage는 페이지를 붙인 뒤에도 sentinel이 화면에 남아 있을 때
+  // 감시를 다시 걸어 이어받기 위한 것이다(observe 직후 현재 교차 상태가 한 번 통보된다).
+  // 그 통보는 요청이 진행 중일 때도 오는데, fetchNextPage는 기본값 cancelRefetch:true라
+  // 다시 부르면 진행 중 요청을 취소하고 새로 시작한다. 그래서 이중으로 막는다.
+  // (isFetchingNextPage 가드만으로는 리렌더 전 짧은 틈이 남아 cancelRefetch:false도 함께 둔다)
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !hasNextPage) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) fetchNextPage();
+        if (entry.isIntersecting && !isFetchingNextPage) {
+          fetchNextPage({ cancelRefetch: false });
+        }
       },
       { rootMargin: "200px" }, // 바닥에 닿기 전에 미리 당겨와 끊김을 줄인다
     );

@@ -71,5 +71,5 @@ export interface UpdateProfileRequest {
   profileImage?: string;
 }
 
-// GET /api/ranking?sortBy= 값. total: 총 학습 시간, avg: 일 평균 학습 시간
+// GET /api/rankings?sortBy= 값. total: 총 학습 시간, avg: 일 평균 학습 시간
 export type RankingSortBy = "total" | "avg";
