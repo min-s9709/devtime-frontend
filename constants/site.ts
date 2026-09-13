@@ -1,12 +1,38 @@
 // 서비스 자체의 공개 주소. 백엔드 주소(NEXT_PUBLIC_API_BASE_URL)와는 별개다.
 // OG·canonical·sitemap은 절대 URL이어야 하는데, 서버 렌더링 시점에는 window.location이
 // 없으므로 자기 도메인을 명시적으로 알려줘야 한다.
-//
-// 배포 도메인이 확정되기 전까지는 localhost로 동작한다. 배포 후 .env에
-// NEXT_PUBLIC_SITE_URL만 채우면 메타데이터·robots·sitemap이 함께 갱신된다.
 // 서버에서만 평가되는 곳(metadata / robots.ts / sitemap.ts)에서만 import한다.
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+// 배포 빌드에서 도메인이 비면 canonical·og:url·sitemap이 전부 localhost를 가리킨다.
+// robots.ts가 색인은 막아주지만, 메신저 크롤러는 robots.txt를 보지 않아 공유 카드가
+// 깨진 채로 나간다. 게다가 robots 차단은 조용히 실패해서 눈치채기 어렵다.
+// 그래서 프로덕션 빌드는 여기서 실패시킨다(apis/api-client.ts와 같은 방식).
+if (process.env.NODE_ENV === "production" && !rawSiteUrl) {
+  throw new Error(
+    "NEXT_PUBLIC_SITE_URL is not defined — 프로덕션 빌드에는 배포 도메인이 필요하다.",
+  );
+}
+
+function normalizeSiteUrl(value: string): string {
+  let parsed: URL;
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new Error(`NEXT_PUBLIC_SITE_URL is not a valid URL: ${value}`);
+  }
+
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new Error(`NEXT_PUBLIC_SITE_URL must be http(s): ${value}`);
+  }
+
+  // 끝 슬래시를 남기면 robots.ts의 `${SITE_URL}/sitemap.xml`이 `//sitemap.xml`이 된다.
+  return value.replace(/\/+$/, "");
+}
+
+// 로컬 개발에서는 localhost가 실제로 올바른 값이라 기본값을 유지한다.
+// 이 값이 쓰이면 robots.ts가 전체 차단으로 응답해 로컬 빌드가 색인될 일은 없다.
+export const SITE_URL = normalizeSiteUrl(rawSiteUrl ?? "http://localhost:3000");
 
 export const SITE_NAME = "DevTime";
 
